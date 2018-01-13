@@ -1,10 +1,13 @@
 #include <iostream>
 #include <stdint.h>
+#include <stdlib.h>
 #include <climits>
 #include <math.h>
 #include <unistd.h>
 
 #include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
+
 
 using namespace std;
 const unsigned fieldPixel = 16;
@@ -14,9 +17,6 @@ const unsigned int screenHeight = 400;
 
 const unsigned int fieldWidth = 15;
 const unsigned int fieldHeight = 13;
-
-SDL_Surface *screen;
-SDL_Event event;
 
 #define CELL_ACCESSABLE 0xf0
 enum CellType {
@@ -29,13 +29,17 @@ enum CellType {
 };
 enum ItemType { ITEM_BOMB, ITEM_SPEED, ITEM_POWER, ITEM_SICK, ITEM_ULTRA };
 
+enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_HEAVEN = 4};
+
 typedef struct {
 	unsigned short x;
 	unsigned short y;
 	unsigned short power;
 	unsigned short bombs;
 	unsigned short speed;
-	unsigned short sickness;
+	unsigned short sickness: 2;
+	enum PlayerDir dir : 3;
+	unsigned short tick : 2;
 } bomberman;
 
 typedef union{
@@ -43,7 +47,8 @@ typedef union{
 		enum CellType type  : 8;
 		unsigned int sprite : 8;
 		unsigned int player : 2;
-		unsigned int extra : 14;
+		unsigned int tick : 6;
+		unsigned int extra : 8;
 		/*
 			Wall: Sprit Type
 			Block: Item ?
@@ -57,19 +62,91 @@ typedef union{
 
 static bomberman player[4];
 static cell field[fieldHeight][fieldWidth];
+SDL_Surface *screen;
+SDL_Event event;
+SDL_Surface * img_bomb;
+SDL_Surface * img_fire;
+SDL_Surface * img_items;
+SDL_Surface * img_player[4];
+SDL_Surface * img_playground;
 
-void setField(int y, int x, Uint32 pixel) {
-	Uint32 *pixels = (Uint32 *)screen->pixels;
-	for (int ix = 0; ix < fieldPixel; ix++)
-		for (int iy = 0; iy < fieldPixel; iy++)
-			pixels[((y*fieldPixel + iy) * screen->w) + x*fieldPixel + ix] = pixel;
+void drawSprite(SDL_Surface * img, unsigned int num, unsigned x, unsigned y){
+	SDL_Rect rcDest = { x * fieldPixel, y * fieldPixel, fieldPixel, fieldPixel};
+	SDL_Rect rcSrc = {  0,num * fieldPixel, fieldPixel, fieldPixel};
+	int r = SDL_BlitSurface ( img, &rcSrc, screen, &rcDest );
+	if (r != 0){
+		cout << "SDL_BlitSurface Error: " <<IMG_GetError() <<endl;
+		exit(1);
+	}
 }
 
-void setPlayer(int y, int x, Uint32 pixel) {
-	Uint32 *pixels = (Uint32 *)screen->pixels;
-	for (int ix = -5; ix <= 5; ix++)
-		for (int iy = -5; iy <= 5; iy++)
-			pixels[((y + iy) * screen->w) + x + ix] = pixel;
+void draw(){
+	
+	if (SDL_MUSTLOCK(screen)) {
+		SDL_LockSurface(screen);
+	}
+	int inc = 1;
+
+	for (int y = 0; y < fieldHeight; y++)
+		for (int x = 0; x < fieldWidth; x++){
+			cell &c = field[y][x];
+			switch (c.type){
+				case CELL_WALL:
+					drawSprite(img_playground, 0, x, y);
+					break;
+
+				case CELL_BLOCK:
+					drawSprite(img_playground, 1, x, y);
+					break;
+
+				case CELL_BOMB:
+					drawSprite(img_playground, field[y-1][x].type <= CELL_BLOCK ? 2 : 3 , x, y);
+					c.tick+= inc;
+					drawSprite(img_bomb, c.tick % 4 == 3 ? 1 : c.tick % 4, x, y);
+					break;
+
+				case CELL_FIRE:
+					drawSprite(img_playground, field[y-1][x].type <= CELL_BLOCK ? 2 : 3 , x, y);
+					c.tick = (c.tick + inc) % 9;
+					drawSprite(img_fire, c.tick > 4 ? (9 - c.tick) : c.tick, x, y);
+					break;
+
+				case CELL_ITEM:
+					c.tick = (c.tick + inc) % 2;
+					drawSprite(img_items, c.tick*9 + c.extra, x, y);
+					break;
+				case CELL_GRASS:
+					drawSprite(img_playground, field[y-1][x].type <= CELL_BLOCK ? 2 : 3 , x, y);
+					break;
+			}
+		}
+
+	for (int p = 0; p < 4; p++){
+		const int playerPixel = 24;
+		bomberman &b = player[p];
+		unsigned num;
+		if (b.dir == MOVE_HEAVEN){
+			num = b.tick %= 5;
+			if (b.tick == 4)
+				break;
+		} else {
+			b.tick %= 4;
+			num = b.tick == 3 ? 2 : b.tick;
+		}
+		SDL_Rect rcDest = { b.x - fieldPixel/2 +1, b.y - fieldPixel -2, fieldPixel, playerPixel};
+		SDL_Rect rcSrc = {  0, (b.dir * 3 + num) * playerPixel, fieldPixel, playerPixel};
+		int r = SDL_BlitSurface(img_player[p], &rcSrc, screen, &rcDest );
+		if (r != 0){
+			cout << "SDL_BlitSurface Error: " <<IMG_GetError() <<endl;
+			exit(1);
+		}
+	}
+
+	if (SDL_MUSTLOCK(screen)) {
+		SDL_UnlockSurface(screen);
+	}
+
+	SDL_Flip(screen);
 }
 
 inline unsigned int min(unsigned int a, unsigned int b){
@@ -81,18 +158,23 @@ inline unsigned int max(unsigned int a, unsigned int b){
 }
 
 
-void move(int p, int y, int x){
-	const int figureSpace = 5;
+void move(int p, enum PlayerDir dir){
+	const int figureSpace = 6;
+	unsigned int x = 0,y = 0;
+	switch(dir) {
+		case MOVE_UP: y = -1; break;
+		case MOVE_DOWN: y = 1; break;
+		case MOVE_LEFT: x = -1; break;
+		case MOVE_RIGHT: x = 1; break;
+	}
+	player[p].dir = dir;
+	player[p].tick++;
 	unsigned int fx = player[p].x/fieldPixel;
 	unsigned int fy = player[p].y/fieldPixel;
-	if (x <= 0)
-		player[p].x = max(player[p].x + x, (field[fy][fx - 1].type & CELL_ACCESSABLE) ? 0 : fx * fieldPixel + figureSpace);
-	if (x >= 0)
-		player[p].x = min(player[p].x + x, (field[fy][fx + 1].type & CELL_ACCESSABLE) ? UINT_MAX : (fx+1) * fieldPixel - figureSpace -1);
-	if (y <= 0)
-		player[p].y = max(player[p].y + y, (field[fy - 1][fx].type & CELL_ACCESSABLE) ? 0 : fy * fieldPixel + figureSpace);
-	if (y >= 0)
-		player[p].y = min(player[p].y + y, (field[fy + 1][fx].type & CELL_ACCESSABLE) ? UINT_MAX : (fy+1) * fieldPixel - figureSpace -1);
+	player[p].x = max(player[p].x + x, (field[fy][fx - 1].type & CELL_ACCESSABLE) ? 0 : fx * fieldPixel + figureSpace);
+	player[p].x = min(player[p].x + x, (field[fy][fx + 1].type & CELL_ACCESSABLE) ? UINT_MAX : (fx+1) * fieldPixel - figureSpace -1);
+	player[p].y = max(player[p].y + y, (field[fy - 1][fx].type & CELL_ACCESSABLE) ? 0 : fy * fieldPixel + figureSpace);
+	player[p].y = min(player[p].y + y, (field[fy + 1][fx].type & CELL_ACCESSABLE) ? UINT_MAX : (fy+1) * fieldPixel - figureSpace -1);
 }
 
 void dropBomb(int p){
@@ -101,7 +183,17 @@ void dropBomb(int p){
 	field[fy][fx].type = CELL_BOMB;
 }
 
+SDL_Surface * loadImage(const char * path){
+	SDL_Surface * target = IMG_Load (path );
+	if (!target ){
+		printf ( "IMG_Load: %s\n", IMG_GetError () );
+		exit(1);
+	}
+	return target;
+}
+
 int main(int argc, char * argv[]){
+
 	for (int p = 0; p < 4; p++){
 		player[p].x = (p < 2 ? 1 : (fieldWidth - 2)) * fieldPixel + fieldPixel/2;
 		player[p].y = (p % 2 ? 1 : (fieldHeight - 2)) * fieldPixel + fieldPixel/2;
@@ -138,11 +230,24 @@ int main(int argc, char * argv[]){
 				field[y][x].type = CELL_GRASS;
 		}
 	cout << sizeof(cell) << endl;
-    SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_Init(SDL_INIT_EVERYTHING);
 	screen = SDL_SetVideoMode(screenWidth, screenHeight, 32, SDL_SWSURFACE);
 	SDL_WM_SetCaption("Bomberman", NULL);
 	SDL_EnableKeyRepeat(100, SDL_DEFAULT_REPEAT_INTERVAL);
-	
+
+	int imgFlags = IMG_INIT_PNG;
+	if( !( IMG_Init( imgFlags ) & imgFlags ) ){
+		cout << "SDL_image could not initialize! SDL_image Error: " <<IMG_GetError() <<endl;
+		return 1;
+	}
+
+	img_bomb = loadImage("img_bomb.png");
+	img_fire = loadImage("img_fire.png");
+	img_items = loadImage("img_items.png");
+	img_playground = loadImage("img_playground0.png");
+	for (int p = 0; p < 4; p++)
+		img_player[p] = loadImage("img_player1.png");
+
 	int quit = 0;
 	Uint32 blackColor = SDL_MapRGB(screen->format, 0, 0, 0);
 	
@@ -151,16 +256,16 @@ int main(int argc, char * argv[]){
 			if (event.type == SDL_KEYDOWN) {
 				switch(event.key.keysym.sym) {
 					case SDLK_UP:
-						move(0,-1,0);
+						move(0,MOVE_UP);
 						break;
 					case SDLK_DOWN:
-						move(0,1,0);
+						move(0,MOVE_DOWN);
 						break;
 					case SDLK_LEFT:
-						move(0,0,-1);
+						move(0,MOVE_LEFT);
 						break;
 					case SDLK_RIGHT:
-						move(0,0,1);
+						move(0,MOVE_RIGHT);
 						break;
 					case SDLK_SPACE:
 						dropBomb(0);
@@ -168,31 +273,17 @@ int main(int argc, char * argv[]){
 					case SDLK_ESCAPE:
 						quit = 1;
 						break;
-                    default:
-                        break;
+					default:
+						break;
 				}
 			}
 			else if (event.type == SDL_QUIT) {
 				quit = 1;
 			}
 		}
-		
 		SDL_FillRect(screen, NULL, blackColor);
-		
-		if (SDL_MUSTLOCK(screen)) {
-			SDL_LockSurface(screen);
-		}
-		for (int y = 0; y < fieldHeight; y++)
-			for (int x = 0; x < fieldWidth; x++)
-				setField(y, x, 5 + field[y][x].type * 50);
-		for (int p = 0; p < 4; p++)
-			setPlayer(player[p].y, player[p].x, p * 0x500000);
-		if (SDL_MUSTLOCK(screen)) {
-			SDL_UnlockSurface(screen);
-		}
-		
-		SDL_Flip(screen);
-		usleep(50);
+		draw();
+		usleep(100000);	
 	}
 	
 	SDL_Quit();
