@@ -1,6 +1,6 @@
 #include "arena.h"
 
-Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) : bomb("img_bomb.png", _tileSize, _tileSize), fire("img_fire.png", _tileSize, _tileSize), item("img_items.png", _tileSize, _tileSize), ground("img_playground0.png", _tileSize, _tileSize), offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {
+Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) : bomb("img/default_bomb.png", _tileSize, _tileSize), fire("img/default_fire.png", _tileSize, _tileSize), item("img/default_items.png", _tileSize, _tileSize), ground("img/playground_default.png", _tileSize, _tileSize), offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {
 	}
 
 void Arena::draw(){

@@ -27,10 +27,10 @@ int main(){
 
 	SDL_EnableKeyRepeat(100, SDL_DEFAULT_REPEAT_INTERVAL);
 
-	player[0].load("img_skin_diver.png");
-	player[1].load("img_skin_blue.png");
-	player[2].load("img_skin_cat.png");
-	player[3].load("img_skin_bride.png");
+	player[0].load("img/skin_diver.png");
+	player[1].load("img/skin_blue.png");
+	player[2].load("img/skin_cat.png");
+	player[3].load("img/skin_bride.png");
 
 	if (!playground.create(&arena_default, layout_default)){
 		cout << "Could not create Playground..."  << endl;
