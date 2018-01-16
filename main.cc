@@ -16,7 +16,7 @@
 using namespace std;
 
 
-Arena arena_default;
+Arena arena_default(10,10);
 Layout layout_default;
 
 SDL_Event event;
@@ -32,13 +32,13 @@ int main(){
 	player[2].load("img/skin_cat.png");
 	player[3].load("img/skin_bride.png");
 
-	if (!playground.create(&arena_default, layout_default)){
+	if (!playground.create(arena_default, layout_default)){
 		cout << "Could not create Playground..."  << endl;
 		return 1;
 	}
 
 	int quit = 0;
-	
+	unsigned int i = 0;
 	while(!quit) {
 		while(SDL_PollEvent(&event)) {
 			if (event.type == SDL_KEYDOWN) {
@@ -69,8 +69,10 @@ int main(){
 				quit = 1;
 			}
 		}
+		if (i++ %10 == 0)
+			playground.tick();
 		playground.draw();
-		usleep(100000);	
+		usleep(10000);
 	}
 
 	return 0;

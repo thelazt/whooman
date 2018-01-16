@@ -17,6 +17,9 @@ private:
 	Arena * arena;
 	unsigned short players;
 
+	bool fire(unsigned short x, unsigned short y, unsigned short player);
+	void explode(unsigned short x, unsigned short y, unsigned short power, unsigned short player);
+
 public:
 	const unsigned short width;
 	const unsigned short height;
@@ -28,8 +31,13 @@ public:
 		return field[y][x];
 	}
 
-	bool create(Arena * _arena, Layout& layout, unsigned short _players = 4);
+	Arena& getArena(){
+		return *arena;
+	}
 
+	bool create(Arena& _arena, Layout& layout, unsigned short _players = 4);
+
+	void tick();
 	void draw();
 };
 

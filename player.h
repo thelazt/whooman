@@ -17,6 +17,8 @@ private:
 	unsigned short y;
 	short offsetX;
 	short offsetY;
+	short offsetXabs;
+	short offsetYabs;
 	unsigned short power;
 	unsigned short bombs;
 	unsigned short speed;

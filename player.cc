@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "playground.h"
+#include "arena.h"
 
 unsigned short Player::idCounter = 0;
 
@@ -13,6 +14,8 @@ void Player::reset(unsigned short _x, unsigned short _y, unsigned short _tileSiz
 	tileSize = _tileSize;
 	x = _x * tileSize + tileSize/2;
 	y = _y * tileSize + tileSize/2;
+	offsetXabs = offsetX + playground.getArena().offsetX;
+	offsetYabs = offsetY + playground.getArena().offsetY;
 	points = 0;
 	alive = true;
 	power = 2;
@@ -40,7 +43,7 @@ void Player::getPos(unsigned short &_x,unsigned short &_y){
 void Player::move(enum PlayerDir _dir){
 	if (alive){
 		short dirY = 0, dirX = 0;
-		unsigned short speed = 1;
+		unsigned short speed = 3;
 		switch(_dir) {
 			case MOVE_UP: dirY = -speed; break;
 			case MOVE_DOWN: dirY = speed; break;
@@ -67,7 +70,11 @@ void Player::bomb(){
 	if (alive){
 		unsigned short fx = x/tileSize;
 		unsigned short fy = y/tileSize;
-		playground.get(fx, fy).type = CELL_BOMB;
+		cell &c = playground.get(fx, fy);
+		c.type = CELL_BOMB;
+		c.tick = TICK_BOMB;
+		c.player = id;
+		c.extra = power;
 	}
 }
 
@@ -98,7 +105,7 @@ void Player::draw(){
 		num = ani == 3 ? 1 : ani;
 	}
 	if (num >= 0)
-		skin.draw(dir * 3 + num, x + offsetX, y + offsetY);
+		skin.draw(dir * 3 + num, x + offsetXabs, y + offsetYabs);
 }
 
 Player player[maxPlayer];

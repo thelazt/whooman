@@ -13,6 +13,8 @@ protected:
 	Sprite item;
 	Sprite ground;
 
+	unsigned short fireSprite(unsigned short x, unsigned short y);
+
 public:
 	const unsigned short offsetX;
 	const unsigned short offsetY;
@@ -22,7 +24,9 @@ public:
 
 	// TODO: Statusbar
 
-	virtual void draw();
+	virtual void draw();	// ticks might have changed
+
+	virtual void update();	// Items have changed
 
 	virtual void background();
 
