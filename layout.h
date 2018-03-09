@@ -10,8 +10,8 @@ class Layout {
 
 protected:
 	void defaultLayout(Playground& ground);
-
 	void defaultPlayer(Playground& ground, unsigned short players);
+	void defaultItems(Playground& ground);
 
 public: 
 	virtual void setup(Playground& ground, unsigned short players);

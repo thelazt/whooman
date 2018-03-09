@@ -2,6 +2,7 @@
 #include "player.h"
 
 void Layout::defaultLayout(Playground& ground){
+	const int blockProbability = 80;
 	for (unsigned short y = 0; y < ground.height; y++)
 		for (unsigned short x = 0; x < ground.width; x++){
 			cell& c = ground.get(x,y);
@@ -13,10 +14,8 @@ void Layout::defaultLayout(Playground& ground){
 			else if (y % 2  == 0 && x % 2 == 0 )
 				c.type = CELL_WALL;
 			// Blocks
-			else if ((x > 2 && x <ground. width - 3) || (y > 2 && y < ground.height - 3)){
+			else if (((x > 2 && x <ground. width - 3) || (y > 2 && y < ground.height - 3)) && random() % 100 < blockProbability)
 				c.type = CELL_BLOCK;
-				// TODO: Item
-			}
 			// Grass
 			else 
 				c.type = CELL_GRASS;
@@ -28,8 +27,53 @@ void Layout::defaultPlayer(Playground& ground, unsigned short players){
 		player[p].reset(p < 2 ? 1 : (ground.width - 2), p % 2 ? 1 : (ground.height - 2));
 }
 
+void Layout::defaultItems(Playground& ground){
+	struct {
+		enum ItemType item;
+		unsigned short probability;
+		unsigned short limit;
+	} distribution[] = {
+		{ ITEM_BOMB, 10, 10 },
+		{ ITEM_POWER, 10, 10 },
+		{ ITEM_SPEED, 4, 10 },
+		{ ITEM_SICK, 3, 3 },
+		{ ITEM_ULTRA, 1, 2 },
+	};
+	
+	struct xy {
+		unsigned short x, y; 
+	};
+	// Save all CELL_BLOK
+	struct xy block[ground.height * ground.width];
+	unsigned short blocks = 0;
+	for (unsigned short y = 0; y < ground.height; y++)
+		for (unsigned short x = 0; x < ground.width; x++)
+			if (ground.get(x,y).type == CELL_BLOCK)
+				block[blocks++] = { x, y };
+	// Shuffle
+	for (unsigned short b = blocks - 1; b > 0; b--){
+		int i = number() % b;
+		struct xy tmp = block[i];
+		cell &c = ground.get(block[i].x, block[i].y);
+		int j = number() % 100;
+		for(int d = 0; d < 5; d++)
+			if (j < distribution[d].probability){
+				if (distribution[d].limit > 0){
+					c.type = CELL_ITEM;
+					c.extra = distribution[d].item;
+					distribution[d].limit--;
+				}
+				break;
+			} else
+				j -= distribution[d].probability;
+		block[i] = block[b];
+	}
+	//
+}
+
 void Layout::setup(Playground& ground, unsigned short players){
 	defaultLayout(ground);
 	defaultPlayer(ground, players);
+	defaultItems(ground);
 }
 

@@ -5,7 +5,7 @@
 Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) : bomb("img/default_bomb.png", _tileSize, _tileSize), fire("img/default_fire.png", _tileSize, _tileSize), item("img/default_items.png", _tileSize, _tileSize), ground("img/playground_default.png", _tileSize, _tileSize), offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {
 	}
 
-void Arena::draw(){
+void Arena::draw(bool tick){
 	for (unsigned short y = 0; y < playground.height; y++)
 		for (unsigned short x = 0; x < playground.width; x++){
 			cell &c = playground.get(x, y);
@@ -17,7 +17,7 @@ void Arena::draw(){
 					ground.draw(10 - c.tick, _x, _y);
 					break;
 				case CELL_ITEM:
-					item.draw((c.tick % 2) * 9 + c.extra, _x, _y);
+					item.draw((c.tick % 2) * 5 + c.extra, _x, _y);
 					break;
 				case CELL_BOMB:
 					bomb.draw((c.tick % 4) == 3 ? 1 : (c.tick % 4), _x, _y);

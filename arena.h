@@ -24,7 +24,7 @@ public:
 
 	// TODO: Statusbar
 
-	virtual void draw();	// ticks might have changed
+	virtual void draw(bool tick = false);	// ticks might have changed
 
 	virtual void update();	// Items have changed
 

@@ -7,7 +7,16 @@ class Player;
 
 class Player {
 public:
-	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_HEAVEN = 4};
+	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_HEAVEN = 4, MOVE_WON = 5};
+	enum PlayerPoints { 
+		POINT_SURVIVE       = 100000,
+		POINT_KILL_PLAYER   = 10000,
+		POINT_DESTROY_ITEM  = 1000,
+		POINT_BOMB_CHAIN    = 100,
+		POINT_DESTROY_BLOCK = 10,
+		POINT_ALIVE         = 1
+	};
+
 	const unsigned short id;
 
 private:
@@ -23,7 +32,7 @@ private:
 	unsigned short bombs;
 	unsigned short speed;
 	unsigned short sickness;
-	unsigned short points;
+	unsigned int points;
 	bool alive;
 	enum PlayerDir dir;
 	unsigned short ani;
@@ -31,6 +40,8 @@ private:
 
 	Sprite skin;
 	static unsigned short idCounter;
+
+	const unsigned short factor = 2;
 
 public:
 	Player();
@@ -45,11 +56,15 @@ public:
 
 	void bomb();
 
+	void addPoint(enum PlayerPoints event);
+
+	unsigned int getPoints();
+
 	void item(enum ItemType _item);
 
 	void die();
 
-	void draw();
+	void draw(bool tick = false);
 };
 
 extern Player player[maxPlayer];

@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <unistd.h>
+#include <ctime>
+#include <random>
+
 
 #include "SDL/SDL.h"
 
@@ -23,7 +26,12 @@ SDL_Event event;
 
 Screen screen(1024,768);
 
+int number(){
+	return std::rand();
+}
+
 int main(){
+	std::srand(std::time(nullptr));
 
 	SDL_EnableKeyRepeat(100, SDL_DEFAULT_REPEAT_INTERVAL);
 
@@ -69,10 +77,10 @@ int main(){
 				quit = 1;
 			}
 		}
-		if (i++ %10 == 0)
+		if (i++ % 16 == 0)
 			playground.tick();
 		playground.draw();
-		usleep(10000);
+		usleep(5000);
 	}
 
 	return 0;

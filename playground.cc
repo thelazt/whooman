@@ -1,3 +1,5 @@
+#include <iostream> 
+
 #include "playground.h"
 #include "player.h"
 #include "screen.h"
@@ -15,25 +17,70 @@ bool Playground::create(Arena& _arena, Layout& layout, unsigned short _players){
 	}
 }
 
-bool Playground::fire(unsigned short x, unsigned short y, unsigned short player){
+void Playground::killall(unsigned short x, unsigned short y, unsigned short _player){
+	for (int p = 0; p < players; p++){
+		unsigned short px, py;
+		player[p].getPos(px, py);
+		if (px == x && py == y){
+			if (p != _player)
+				player[_player].addPoint(Player::POINT_KILL_PLAYER);
+			player[p].die();
+		}
+	}
+}
+
+void Playground::access(unsigned short x, unsigned short y, unsigned short _player){
+	// Check cells
 	cell &c = field[y][x];
 	switch (c.type){
 		case CELL_GRASS:
+			break;
 		case CELL_ITEM:
+			player[_player].item((enum ItemType) c.extra);
+			c.value = 0;
+			c.type = CELL_GRASS;
+			break;
+		case CELL_FIRE:
+			if (c.player != _player)
+				player[c.player].addPoint(Player::POINT_KILL_PLAYER);
+			player[_player].die();
+			break;
+
+		case CELL_BOMB:
+			break;
+		default:
+			// error
+			std::cerr << "Should not happen!" << c.type << std::endl;
+	}
+}
+
+
+bool Playground::fire(unsigned short x, unsigned short y, unsigned short _player){
+	// Check Player
+	killall(x, y, _player);
+
+	// Check cells
+	cell &c = field[y][x];
+	switch (c.type){
+		case CELL_ITEM:
+			player[_player].addPoint(Player::POINT_DESTROY_ITEM);
+			// no break
+		case CELL_GRASS:
 			c.value = 0;
 			c.type = CELL_FIRE;
 			// no break
 		case CELL_FIRE:
-			c.player = player;
+			c.player = _player;
 			c.tick = TICK_FIRE;
 			break;
 		case CELL_BOMB:
-			explode(x, y, c.extra, player); // points for player initiating the explosion only
+			player[_player].addPoint(Player::POINT_BOMB_CHAIN);
+			explode(x, y, c.extra, _player); // points for player initiating the explosion only
 			break;
 		case CELL_BLOCK:
-			// TODO: Player points
+			player[_player].addPoint(Player::POINT_DESTROY_BLOCK);
 			c.type = CELL_BLOCKONFIRE;
-			c.player = player;
+			c.player = _player;
 			c.tick = TICK_BLOCKONFIRE;
 			// no break
 		case CELL_BLOCKONFIRE:
@@ -43,23 +90,25 @@ bool Playground::fire(unsigned short x, unsigned short y, unsigned short player)
 	return true;
 }
 
-void Playground::explode(unsigned short x, unsigned short y, unsigned short power, unsigned short player){
+void Playground::explode(unsigned short x, unsigned short y, unsigned short power, unsigned short _player){
 	cell &c = field[y][x];
+	if (c.type == CELL_BOMB)
+		player[(int)c.player].item(ITEM_BOMB);
 	c.value = 0;
 	c.type = CELL_FIRE;
-	c.player = player;
+	c.player = _player;
 	c.tick = TICK_FIRE;
 	for (unsigned short _x = x - 1; _x >= max<unsigned short>(0, x - power); _x--)
-		if (!fire(_x, y, player))
+		if (!fire(_x, y, _player))
 			break;
 	for (unsigned short _x = x + 1; _x <= min<unsigned short>(width - 1, x + power); _x++)
-		if (!fire(_x, y, player))
+		if (!fire(_x, y, _player))
 			break;
 	for (unsigned short _y = y - 1; _y >= max<unsigned short>(0, y - power); _y--)
-		if (!fire(x, _y, player))
+		if (!fire(x, _y, _player))
 			break;
 	for (unsigned short _y = y + 1; _y <= min<unsigned short>(height - 1, y + power); _y++)
-		if (!fire(x, _y, player))
+		if (!fire(x, _y, _player))
 			break;
 }
 
@@ -94,20 +143,25 @@ void Playground::tick(){
 		for (unsigned short y = 0; y < playground.height; y++)
 			for (unsigned short x = 0; x < playground.width; x++){
 				cell &c = field[y][x];
-				if (c.type == CELL_BOMB && c.tick == 0)
+				if (c.type == CELL_BOMB && c.tick == 0){
+					killall(x, y, c.player);
 					explode(x, y, c.extra, c.player);
+				}
 			}
+
 	if (status)
 		arena->update();
+
+	draw(true);
 }
 
-void Playground::draw(){
+void Playground::draw(bool tick){
 	screen.lock();
 
-	arena->draw();
+	arena->draw(tick);
 
 	for (int p = 0; p < players; p++){
-		player[p].draw();
+		player[p].draw(tick);
 	}
 
 	screen.unlock();

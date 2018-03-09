@@ -5,11 +5,11 @@ const unsigned defaultTileSize = 48;
 
 const unsigned maxPlayer = 4;
 
-enum ItemType { ITEM_BOMB, ITEM_SPEED, ITEM_POWER, ITEM_SICK, ITEM_ULTRA };
+enum ItemType { ITEM_BOMB = 0, ITEM_SPEED = 1, ITEM_POWER = 2, ITEM_ULTRA = 3, ITEM_SICK = 4};
 
 const unsigned short TICK_FIRE = 8;
 const unsigned short TICK_BLOCKONFIRE = 7;
-const unsigned short TICK_BOMB = 32;
+const unsigned short TICK_BOMB = 16;
 
 const unsigned CELL_ACCESSABLE = 0x80;
 const unsigned CELL_ONFIRE = 0x40;
@@ -49,5 +49,5 @@ template <class T> const T& min (const T& a, const T& b) {
 	return (a>b)?b:a;
 }
 
-
+extern int number();
 #endif

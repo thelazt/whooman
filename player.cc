@@ -12,8 +12,8 @@ Player::Player() : id(idCounter++){}
 
 void Player::reset(unsigned short _x, unsigned short _y, unsigned short _tileSize){
 	tileSize = _tileSize;
-	x = _x * tileSize + tileSize/2;
-	y = _y * tileSize + tileSize/2;
+	x = (_x * tileSize + tileSize/2) << factor;
+	y = (_y * tileSize + tileSize/2) << factor;
 	offsetXabs = offsetX + playground.getArena().offsetX;
 	offsetYabs = offsetY + playground.getArena().offsetY;
 	points = 0;
@@ -36,46 +36,60 @@ void Player::load(const char * path, unsigned short _size, unsigned short _figur
 
 
 void Player::getPos(unsigned short &_x,unsigned short &_y){
-	_x = x;
-	_y = y;
+	_x = (x >> factor) / tileSize;
+	_y = (y >> factor) / tileSize;
 }
 
 void Player::move(enum PlayerDir _dir){
+	static unsigned int counter = 0;
 	if (alive){
 		short dirY = 0, dirX = 0;
-		unsigned short speed = 3;
+		unsigned short s = (32 + speed);
 		switch(_dir) {
-			case MOVE_UP: dirY = -speed; break;
-			case MOVE_DOWN: dirY = speed; break;
-			case MOVE_LEFT: dirX = -speed; break;
-			case MOVE_RIGHT: dirX = speed; break;
+			case MOVE_UP: dirY = -s; break;
+			case MOVE_DOWN: dirY = s; break;
+			case MOVE_LEFT: dirX = -s; break;
+			case MOVE_RIGHT: dirX = s; break;
 			default: break;
 		}
 		dir = _dir;
-		ani++;
-		unsigned short fx = x/tileSize ;
-		unsigned short fy = y/tileSize ;
-		if (!(dirX > 0))
-			x = max<unsigned short>(x + dirX, (playground.get(fx - 1, fy).type & CELL_ACCESSABLE) ? 0 : (fx * tileSize + figureSpace));
-		if (!(dirX < 0))
-			x = min<unsigned short>(x + dirX, (playground.get(fx + 1, fy).type & CELL_ACCESSABLE) ? USHRT_MAX : ((fx + 1) * tileSize - figureSpace));
-		if (!(dirY > 0))
-			y = max<unsigned short>(y + dirY, (playground.get(fx, fy - 1).type & CELL_ACCESSABLE) ? 0 : (fy * tileSize + figureSpace));
-		if (!(dirY < 0))
-			y = min<unsigned short>(y + dirY, (playground.get(fx, fy + 1).type & CELL_ACCESSABLE) ? USHRT_MAX : ((fy + 1) * tileSize - figureSpace));
+		if (counter++ % 2 == 0)
+			ani++;
+		unsigned short fx, fy;
+		getPos(fx, fy);
+		if (dirX <= 0)
+			x = max<unsigned short>(x + dirX, playground.accessible(fx - 1, fy) ? 0 : ((fx * tileSize + figureSpace) << factor));
+		if (dirX >= 0)
+			x = min<unsigned short>(x + dirX, playground.accessible(fx + 1, fy) ? USHRT_MAX : (((fx + 1) * tileSize - figureSpace) << factor));
+		if (dirY <= 0)
+			y = max<unsigned short>(y + dirY, playground.accessible(fx, fy - 1) ? 0 : ((fy * tileSize + figureSpace) << factor));
+		if (dirY >= 0)
+			y = min<unsigned short>(y + dirY, playground.accessible(fx, fy + 1) ? USHRT_MAX : (((fy + 1) * tileSize - figureSpace) << factor));
+
+		getPos(fx, fy);
+		playground.access(fx, fy, id);
 	}
 }
 
 void Player::bomb(){
-	if (alive){
-		unsigned short fx = x/tileSize;
-		unsigned short fy = y/tileSize;
+	if (alive && bombs > 0){
+		unsigned short fx = (x >> factor) / tileSize;
+		unsigned short fy = (y >> factor) / tileSize;
 		cell &c = playground.get(fx, fy);
 		c.type = CELL_BOMB;
 		c.tick = TICK_BOMB;
 		c.player = id;
 		c.extra = power;
+		bombs--;
 	}
+}
+
+void Player::addPoint(enum PlayerPoints event){
+	points+=event;
+}
+
+unsigned int Player::getPoints(){
+	return points;
 }
 
 void Player::item(enum ItemType _item){
@@ -91,21 +105,30 @@ void Player::item(enum ItemType _item){
 }
 
 void Player::die(){
-	alive = false;
-	dir = MOVE_HEAVEN;
-	ani = 0;
+	if (alive){
+		alive = false;
+		dir = MOVE_HEAVEN;
+		ani = 0;
+		// TODO: Check survivors
+	}
 }
 
-void Player::draw(){
+void Player::draw(bool tick){
 	short num = -1;
-	if (dir == MOVE_HEAVEN && ani <4){
-		num = ani++;
+	if (dir == MOVE_HEAVEN && ani < 3){
+		num = ani;
+		if (tick)
+			ani++;
+	} else if (dir == MOVE_WON){
+		num = ani;
+		if (tick)
+			ani = (ani + 1) % 2;
 	} else if (alive){
 		ani %= 4;
 		num = ani == 3 ? 1 : ani;
 	}
 	if (num >= 0)
-		skin.draw(dir * 3 + num, x + offsetXabs, y + offsetYabs);
+		skin.draw(dir * 3 + num, (x >> factor) + offsetXabs, (y >> factor) + offsetYabs);
 }
 
 Player player[maxPlayer];
