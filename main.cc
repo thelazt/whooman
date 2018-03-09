@@ -66,6 +66,9 @@ int main(){
 					case SDLK_SPACE:
 						player[0].bomb();
 						break;
+					case SDLK_d:
+						playground.dump();
+						break;
 					case SDLK_ESCAPE:
 						quit = 1;
 						break;

@@ -11,16 +11,16 @@ const unsigned short TICK_FIRE = 8;
 const unsigned short TICK_BLOCKONFIRE = 7;
 const unsigned short TICK_BOMB = 16;
 
-const unsigned CELL_ACCESSABLE = 0x80;
+const unsigned CELL_ACCESSIBLE = 0x80;
 const unsigned CELL_ONFIRE = 0x40;
 enum CellType {
 	CELL_WALL = 0,
 	CELL_BLOCK = 1,
 	CELL_BOMB = 2,
-	CELL_FIRE = CELL_ACCESSABLE | CELL_ONFIRE | 3,
-	CELL_BLOCKONFIRE = CELL_ACCESSABLE | CELL_ONFIRE | 4,
-	CELL_ITEM = CELL_ACCESSABLE | 5,
-	CELL_GRASS = CELL_ACCESSABLE | 0xf,
+	CELL_FIRE = CELL_ACCESSIBLE | CELL_ONFIRE | 3,
+	CELL_BLOCKONFIRE = CELL_ACCESSIBLE | CELL_ONFIRE | 4,
+	CELL_ITEM = CELL_ACCESSIBLE | 5,
+	CELL_GRASS = CELL_ACCESSIBLE | 0xf,
 };
 
 typedef union {
@@ -30,12 +30,13 @@ typedef union {
 		unsigned short sprite  : 6;	// Used by Arena only
 		unsigned short tick : 8;
 		unsigned short player : 2;
-		unsigned short extra : 6;
+		unsigned short extra : 5;
 		/*
 			Block: Item
 			Bomb: Power
 			Item: Item
 		*/
+		unsigned short danger : 1;
 	};
 	unsigned int value;
 } cell;

@@ -7,7 +7,7 @@ class Player;
 
 class Player {
 public:
-	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_HEAVEN = 4, MOVE_WON = 5};
+	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_HEAVEN = 4, MOVE_WON = 5, MOVE_AUTO = 0xff};
 	enum PlayerPoints { 
 		POINT_SURVIVE       = 100000,
 		POINT_KILL_PLAYER   = 10000,
@@ -38,10 +38,20 @@ private:
 	unsigned short ani;
 	unsigned short tileSize;
 
+	// Bot specific
+	unsigned short targetX, targetY;
+	unsigned short previousX, previousY;
+	enum PlayerDir previousDir;
+	bool wait;
+
+
 	Sprite skin;
 	static unsigned short idCounter;
 
 	const unsigned short factor = 2;
+
+
+	bool isThisAGoodPlaceForABomb();
 
 public:
 	Player();
@@ -52,7 +62,7 @@ public:
 
 	void getPos(unsigned short &_x,unsigned short &_y);
 
-	void move(enum PlayerDir _dir);
+	void move(enum PlayerDir _dir = MOVE_AUTO);
 
 	void bomb();
 

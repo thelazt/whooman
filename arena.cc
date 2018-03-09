@@ -1,8 +1,9 @@
 #include "arena.h"
 
+#include <cassert>
 #include <iostream>
 
-Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) : bomb("img/default_bomb.png", _tileSize, _tileSize), fire("img/default_fire.png", _tileSize, _tileSize), item("img/default_items.png", _tileSize, _tileSize), ground("img/playground_default.png", _tileSize, _tileSize), offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {
+Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) : bomb("img/default_bomb.png", _tileSize, _tileSize), fire("img/default_fire.png", _tileSize, _tileSize), item("img/default_items.png", _tileSize, _tileSize), ground("img/playground_default.png", _tileSize, _tileSize), danger("img/default_danger.png", _tileSize, _tileSize), offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {
 	}
 
 void Arena::draw(bool tick){
@@ -24,18 +25,22 @@ void Arena::draw(bool tick){
 					break;
 				case CELL_FIRE:
 					fire.draw(((c.tick % 9) > 4 ? (8 - (c.tick % 9)) : c.tick) * 9 + c.sprite , _x, _y);
+					break;
 				default: break;
 			}
+			// debug
+			if (c.danger)
+				danger.draw((c.tick % 2), _x, _y);
 		}
 }
 
 unsigned short Arena::fireSprite(unsigned short x, unsigned short y){
 	bool up, down, left, right;
 	unsigned short count = 0; 
-	count += up = playground.get(x, y - 1).type & CELL_ONFIRE;
-	count += down = playground.get(x, y + 1).type & CELL_ONFIRE;
-	count += left = playground.get(x - 1, y).type & CELL_ONFIRE;
-	count += right = playground.get(x + 1, y).type & CELL_ONFIRE;
+	count += (up = (playground.get(x, y - 1).type & CELL_ONFIRE)) ? 1 : 0;
+	count += (down = (playground.get(x, y + 1).type & CELL_ONFIRE)) ? 1 : 0;
+	count += (left = (playground.get(x - 1, y).type & CELL_ONFIRE)) ? 1 : 0;
+	count += (right = (playground.get(x + 1, y).type & CELL_ONFIRE)) ? 1 : 0;
 	switch (count){
 		case 1:
 			if (down)
@@ -46,16 +51,17 @@ unsigned short Arena::fireSprite(unsigned short x, unsigned short y){
 				return 2;
 			else if (right)
 				return 3;
-			// no break
+			assert(false);
+			break;
 		case 0:
-			std::cout << "invalid fire" << std::endl;
-			// no break
+			std::cout << "invalid fire" << count <<  std::endl;
+			[[gnu::fallthrough]];
 		case 2:
 			if (up && down)
 				return 4;
 			else if (left && right)
 				return 5;
-			// no break;
+			[[gnu::fallthrough]];
 		default:
 			return 8;
 	}

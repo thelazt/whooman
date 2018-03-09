@@ -43,6 +43,10 @@ void Player::getPos(unsigned short &_x,unsigned short &_y){
 void Player::move(enum PlayerDir _dir){
 	static unsigned int counter = 0;
 	if (alive){
+		if (_dir == MOVE_AUTO){
+			
+		}
+		// 
 		short dirY = 0, dirX = 0;
 		unsigned short s = (32 + speed);
 		switch(_dir) {
@@ -75,12 +79,7 @@ void Player::bomb(){
 	if (alive && bombs > 0){
 		unsigned short fx, fy;
 		getPos(fx, fy);
-		cell &c = playground.get(fx, fy);
-		if (c.type == CELL_GRASS){
-			c.type = CELL_BOMB;
-			c.tick = TICK_BOMB;
-			c.player = id;
-			c.extra = power;
+		if (playground.bomb(fx, fy, id, power, TICK_BOMB)){
 			bombs--;
 		}
 	}

@@ -20,6 +20,7 @@ private:
 	void killall(unsigned short x, unsigned short y, unsigned short _player);
 	bool fire(unsigned short x, unsigned short y, unsigned short _player);
 	void explode(unsigned short x, unsigned short y, unsigned short _player);
+	bool dangerzone(unsigned short x, unsigned short y);
 
 public:
 	const unsigned short width;
@@ -28,6 +29,8 @@ public:
 	Playground(unsigned short _width = 15, unsigned short _height = 13) : width(_width > maxWidth ? maxWidth : _width), height(_height > maxHeight ? maxHeight : _height) {
 	}
 
+	void dump();
+
 	void access(unsigned short x, unsigned short y, unsigned short _player);
 
 	cell& get(unsigned short x, unsigned short y){
@@ -35,7 +38,7 @@ public:
 	}
 
 	bool accessible(unsigned short x, unsigned short y){
-		return field[y][x].type & CELL_ACCESSABLE;
+		return field[y][x].type & CELL_ACCESSIBLE;
 	}
 
 	Arena& getArena(){
@@ -44,6 +47,8 @@ public:
 
 	bool create(Arena& _arena, Layout& layout, unsigned short _players = 4);
 
+	bool bomb(unsigned short x, unsigned short y, unsigned short _player, unsigned short power, unsigned short ticks);
+	
 	void tick();
 	void draw(bool tick = false);
 };
