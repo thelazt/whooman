@@ -1,6 +1,19 @@
 #include "layout.h"
 #include "player.h"
 
+struct {
+	enum ItemType item;
+	unsigned short probability;
+	unsigned short limit;
+} distribution[] = {
+	{ ITEM_BOMB, 10, 10 },
+	{ ITEM_POWER, 10, 10 },
+	{ ITEM_SPEED, 4, 10 },
+	{ ITEM_SICK, 3, 3 },
+	{ ITEM_ULTRA, 1, 2 },
+};
+
+
 void Layout::defaultLayout(Playground& ground){
 	const int blockProbability = 80;
 	for (unsigned short y = 0; y < ground.height; y++)
@@ -28,18 +41,6 @@ void Layout::defaultPlayer(Playground& ground, unsigned short players){
 }
 
 void Layout::defaultItems(Playground& ground){
-	struct {
-		enum ItemType item;
-		unsigned short probability;
-		unsigned short limit;
-	} distribution[] = {
-		{ ITEM_BOMB, 10, 10 },
-		{ ITEM_POWER, 10, 10 },
-		{ ITEM_SPEED, 4, 10 },
-		{ ITEM_SICK, 3, 3 },
-		{ ITEM_ULTRA, 1, 2 },
-	};
-	
 	struct xy {
 		unsigned short x, y; 
 	};
@@ -59,7 +60,6 @@ void Layout::defaultItems(Playground& ground){
 		for(int d = 0; d < 5; d++)
 			if (j < distribution[d].probability){
 				if (distribution[d].limit > 0){
-					c.type = CELL_ITEM;
 					c.extra = distribution[d].item;
 					distribution[d].limit--;
 				}
@@ -68,7 +68,6 @@ void Layout::defaultItems(Playground& ground){
 				j -= distribution[d].probability;
 		block[i] = block[b];
 	}
-	//
 }
 
 void Layout::setup(Playground& ground, unsigned short players){

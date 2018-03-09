@@ -19,7 +19,7 @@ private:
 
 	void killall(unsigned short x, unsigned short y, unsigned short _player);
 	bool fire(unsigned short x, unsigned short y, unsigned short _player);
-	void explode(unsigned short x, unsigned short y, unsigned short power, unsigned short _player);
+	void explode(unsigned short x, unsigned short y, unsigned short _player);
 
 public:
 	const unsigned short width;

@@ -17,7 +17,7 @@ void Arena::draw(bool tick){
 					ground.draw(10 - c.tick, _x, _y);
 					break;
 				case CELL_ITEM:
-					item.draw((c.tick % 2) * 5 + c.extra, _x, _y);
+					item.draw((c.tick % 2) * 5 + c.extra - 1, _x, _y);
 					break;
 				case CELL_BOMB:
 					bomb.draw((c.tick % 4) == 3 ? 1 : (c.tick % 4), _x, _y);

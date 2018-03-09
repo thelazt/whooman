@@ -1,4 +1,5 @@
-#include <iostream> 
+#include <iostream>
+#include <cassert>  
 
 #include "playground.h"
 #include "player.h"
@@ -39,6 +40,7 @@ void Playground::access(unsigned short x, unsigned short y, unsigned short _play
 			player[_player].item((enum ItemType) c.extra);
 			c.value = 0;
 			c.type = CELL_GRASS;
+			arena->update();
 			break;
 		case CELL_FIRE:
 			if (c.player != _player)
@@ -75,7 +77,7 @@ bool Playground::fire(unsigned short x, unsigned short y, unsigned short _player
 			break;
 		case CELL_BOMB:
 			player[_player].addPoint(Player::POINT_BOMB_CHAIN);
-			explode(x, y, c.extra, _player); // points for player initiating the explosion only
+			explode(x, y, _player); // points for player initiating the explosion only
 			break;
 		case CELL_BLOCK:
 			player[_player].addPoint(Player::POINT_DESTROY_BLOCK);
@@ -90,10 +92,11 @@ bool Playground::fire(unsigned short x, unsigned short y, unsigned short _player
 	return true;
 }
 
-void Playground::explode(unsigned short x, unsigned short y, unsigned short power, unsigned short _player){
+void Playground::explode(unsigned short x, unsigned short y, unsigned short _player){
 	cell &c = field[y][x];
-	if (c.type == CELL_BOMB)
-		player[(int)c.player].item(ITEM_BOMB);
+	assert(c.type == CELL_BOMB);
+	player[(int)c.player].item(ITEM_BOMB);
+	unsigned short power = c.extra;
 	c.value = 0;
 	c.type = CELL_FIRE;
 	c.player = _player;
@@ -145,7 +148,7 @@ void Playground::tick(){
 				cell &c = field[y][x];
 				if (c.type == CELL_BOMB && c.tick == 0){
 					killall(x, y, c.player);
-					explode(x, y, c.extra, c.player);
+					explode(x, y, c.player);
 				}
 			}
 

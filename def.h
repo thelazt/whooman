@@ -5,7 +5,7 @@ const unsigned defaultTileSize = 48;
 
 const unsigned maxPlayer = 4;
 
-enum ItemType { ITEM_BOMB = 0, ITEM_SPEED = 1, ITEM_POWER = 2, ITEM_ULTRA = 3, ITEM_SICK = 4};
+enum ItemType { ITEM_BOMB = 1, ITEM_SPEED = 2, ITEM_POWER = 3, ITEM_ULTRA = 4, ITEM_SICK = 5};
 
 const unsigned short TICK_FIRE = 8;
 const unsigned short TICK_BLOCKONFIRE = 7;

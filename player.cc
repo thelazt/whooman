@@ -73,14 +73,16 @@ void Player::move(enum PlayerDir _dir){
 
 void Player::bomb(){
 	if (alive && bombs > 0){
-		unsigned short fx = (x >> factor) / tileSize;
-		unsigned short fy = (y >> factor) / tileSize;
+		unsigned short fx, fy;
+		getPos(fx, fy);
 		cell &c = playground.get(fx, fy);
-		c.type = CELL_BOMB;
-		c.tick = TICK_BOMB;
-		c.player = id;
-		c.extra = power;
-		bombs--;
+		if (c.type == CELL_GRASS){
+			c.type = CELL_BOMB;
+			c.tick = TICK_BOMB;
+			c.player = id;
+			c.extra = power;
+			bombs--;
+		}
 	}
 }
 
