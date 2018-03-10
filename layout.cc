@@ -27,7 +27,7 @@ void Layout::defaultLayout(Playground& ground){
 			else if (y % 2  == 0 && x % 2 == 0 )
 				c.type = CELL_WALL;
 			// Blocks
-			else if (((x > 2 && x <ground. width - 3) || (y > 2 && y < ground.height - 3)) && random() % 100 < blockProbability)
+			else if (((x > 2 && x <ground. width - 3) || (y > 2 && y < ground.height - 3)) /* && random() % 100 < blockProbability */)
 				c.type = CELL_BLOCK;
 			// Grass
 			else 

@@ -14,13 +14,15 @@ private:
 	static const unsigned short maxHeight = 16;
 
 	cell field[maxHeight][maxWidth];
+	unsigned char dangerzone[maxHeight][maxWidth];
+
 	Arena * arena;
 	unsigned short players;
 
 	void killall(unsigned short x, unsigned short y, unsigned short _player);
 	bool fire(unsigned short x, unsigned short y, unsigned short _player);
 	void explode(unsigned short x, unsigned short y, unsigned short _player);
-	bool dangerzone(unsigned short x, unsigned short y);
+	bool dangerous(unsigned short x, unsigned short y);
 
 public:
 	enum PlaygroundAccess { ACCESS_DEADLY, ACCESS_DANGEROUS, ACCESS_SAFE };

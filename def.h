@@ -30,13 +30,12 @@ typedef union {
 		unsigned short sprite  : 6;	// Used by Arena only
 		unsigned short tick : 8;
 		unsigned short player : 2;
-		unsigned short extra : 5;
+		unsigned short extra : 6;
 		/*
 			Block: Item
 			Bomb: Power
 			Item: Item
 		*/
-		unsigned short danger : 1;
 	};
 	unsigned int value;
 } cell;

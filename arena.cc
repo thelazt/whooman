@@ -29,7 +29,7 @@ void Arena::draw(bool tick){
 				default: break;
 			}
 			// debug
-			if (c.danger)
+			if (playground.danger(x, y))
 				danger.draw((c.tick % 2), _x, _y);
 		}
 }

@@ -38,9 +38,8 @@ void Player::load(const char * path, unsigned short _size, unsigned short _figur
 	skin = Sprite(path, _size, _size);
 }
 
-
 bool Player::shouldBomb(unsigned short _x,unsigned short _y){
-	if (playground.get(_x, _y).type == CELL_BLOCK)
+	if (playground.get(_x, _y).type == CELL_BLOCK && random() % 2)
 		return true;
 	for (int p = 0; p < playground.playerCount(); p++)
 		if (p != id && player[p].atPos(_x, _y) && random() % 2)
@@ -51,7 +50,6 @@ bool Player::shouldBomb(unsigned short _x,unsigned short _y){
 bool Player::atPos(unsigned short _x,unsigned short _y){
 	return alive && (_x == (x >> factor) / tileSize) && (_y == (y >> factor) / tileSize);
 }
-
 
 void Player::getPos(unsigned short &_x,unsigned short &_y){
 	_x = (x >> factor) / tileSize;
@@ -74,7 +72,6 @@ bool Player::findTarget(unsigned short x, unsigned short y, enum Playground::Pla
 		target[targets++].set(x, y + 1, MOVE_DOWN);
 	if (playground.accessible(x, y - 1, access))
 		target[targets++].set(x, y - 1, MOVE_UP);
-		
 	int i = 0;
 	if (targets == 0)
 		return false;
@@ -90,7 +87,6 @@ bool Player::findTarget(unsigned short x, unsigned short y, enum Playground::Pla
 	targetX = target[i].x;
 	targetY = target[i].y;
 	dir = target[i].dir;
-	printf("%d targets %d %d with %d\n",id, targetX, targetY, (int)dir);
 	return true;
 }
 
@@ -100,14 +96,12 @@ void Player::move(enum PlayerDir _dir){
 		unsigned short fx, fy;
 		getPos(fx, fy);
 		if (_dir == MOVE_AUTO){
-//			printf("%d: %d == %d && %d == %d, %d\n", id, fx,  targetX, fy, targetY, (int) dir); 
 			if (fx == targetX && fy == targetY){
-
 				if (!cover && (shouldBomb(fx + 1, fy) || shouldBomb(fx - 1, fy) || shouldBomb(fx, fy + 1) || shouldBomb(fx, fy - 1)) &&	bomb())
 					cover = true;
 				if (cover && !playground.danger(fx,fy))
 					wait = true;
-				if (!wait && (number() % 3 != 0 || findTarget(fx, fy, Playground::ACCESS_SAFE)))
+				if (!wait && (number() % 3 != 0 || !findTarget(fx, fy, Playground::ACCESS_SAFE)))
 					if (!findTarget(fx, fy, Playground::ACCESS_DANGEROUS))
 						return;
 			}
@@ -126,7 +120,6 @@ void Player::move(enum PlayerDir _dir){
 			case MOVE_RIGHT: dirX = s; break;
 			default: return;
 		}
-	if (id == 1) printf("Dir == %d \n", dir);
 		if (counter++ % 2 == 0)
 			ani++;
 

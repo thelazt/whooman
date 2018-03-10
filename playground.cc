@@ -14,6 +14,9 @@ bool Playground::create(Arena& _arena, Layout& layout, unsigned short _players){
 		_arena.background();
 		_arena.foreground();
 		players = _players;
+		for (unsigned short y = 0; y < playground.height; y++)
+			for (unsigned short x = 0; x < playground.width; x++)
+				dangerzone[y][x] = 0;
 		return true;
 	}
 }
@@ -38,12 +41,8 @@ void Playground::access(unsigned short x, unsigned short y, unsigned short _play
 			break;
 		case CELL_ITEM:
 			player[_player].item((enum ItemType) c.extra);
+			c.value = 0;
 			c.type = CELL_GRASS;
-			c.surface = 0;
-			c.sprite = 0;
-			c.tick = 0;
-			c.player = 0;
-			c.extra = 0;
 			arena->update();
 			break;
 		case CELL_FIRE:
@@ -74,7 +73,6 @@ bool Playground::fire(unsigned short x, unsigned short y, unsigned short _player
 		case CELL_GRASS:
 			c.value = 0;
 			c.type = CELL_FIRE;
-			c.danger = 1;
 			[[gnu::fallthrough]];
 		case CELL_FIRE:
 			c.player = _player;
@@ -93,7 +91,6 @@ bool Playground::fire(unsigned short x, unsigned short y, unsigned short _player
 		default:
 			return false;
 	}
-
 }
 
 void Playground::explode(unsigned short x, unsigned short y, unsigned short _player){
@@ -107,7 +104,6 @@ void Playground::explode(unsigned short x, unsigned short y, unsigned short _pla
 	c.type = CELL_FIRE;
 	c.player = _player;
 	c.tick = TICK_FIRE;
-	c.danger = 1;
 	for (unsigned short _x = x - 1; _x >= max<short>(1, ((short)x) - power); _x--)
 		if (!fire(_x, y, _player))
 			break;
@@ -122,7 +118,7 @@ void Playground::explode(unsigned short x, unsigned short y, unsigned short _pla
 			break;
 }
 
-bool Playground::dangerzone(unsigned short x, unsigned short y){
+bool Playground::dangerous(unsigned short x, unsigned short y){
 	// Check cells
 	cell &c = field[y][x];
 	switch (c.type){
@@ -130,7 +126,7 @@ bool Playground::dangerzone(unsigned short x, unsigned short y){
 		case CELL_GRASS:
 		case CELL_FIRE:
 		case CELL_BOMB:
-			c.danger = 1;
+			dangerzone[y][x]++;
 			return true;
 		default:
 			return false;
@@ -145,18 +141,18 @@ bool Playground::bomb(unsigned short x, unsigned short y, unsigned short _player
 		c.player = _player;
 		c.extra = power;
 		// Mark dangerzone
-		c.danger = 1;
+		dangerzone[y][x]++;
 		for (unsigned short _x = x - 1; _x >= max<short>(1, ((short)x) - power); _x--)
-			if (!dangerzone(_x, y))
+			if (!dangerous(_x, y))
 				break;
 		for (unsigned short _x = x + 1; _x <= min<unsigned short>(width - 2, x + power); _x++)
-			if (!dangerzone(_x, y))
+			if (!dangerous(_x, y))
 				break;
 		for (unsigned short _y = y - 1; _y >= max<short>(1, ((short)y) - power); _y--)
-			if (!dangerzone(x, _y))
+			if (!dangerous(x, _y))
 				break;
 		for (unsigned short _y = y + 1; _y <= min<unsigned short>(height - 2, y + power); _y++)
-			if (!dangerzone(x, _y))
+			if (!dangerous(x, _y))
 				break;
 		return true;
 	} else
@@ -164,13 +160,13 @@ bool Playground::bomb(unsigned short x, unsigned short y, unsigned short _player
 }
 
 bool Playground::danger(unsigned short x, unsigned short y){
-	return field[y][x].danger == 1;
+	return dangerzone[y][x] > 0;
 }
 
 bool Playground::accessible(unsigned short x, unsigned short y, enum PlaygroundAccess access){
 	switch (access){
 		case ACCESS_SAFE:
-			if (field[y][x].danger == 1)
+			if (dangerzone[y][x] > 0)
 				return false;
 			[[gnu::fallthrough]];
 		case ACCESS_DANGEROUS:
@@ -178,10 +174,9 @@ bool Playground::accessible(unsigned short x, unsigned short y, enum PlaygroundA
 				return false;
 			[[gnu::fallthrough]];
 		default:
-			return field[y][x].type & CELL_ACCESSIBLE;
+			return (field[y][x].type & CELL_ACCESSIBLE) != 0;
 	}
 }
-
 
 void Playground::tick(){
 	bool status = false;
@@ -198,12 +193,13 @@ void Playground::tick(){
 					case CELL_BLOCKONFIRE:
 						c.player = 0;
 						c.type = c.extra == 0 ? CELL_GRASS : CELL_ITEM;
-						c.danger = 0;
 						status = true;
 						break;
 					case CELL_FIRE:
 						c.value = 0;
 						c.type = CELL_GRASS;
+						assert(dangerzone[y][x] > 0);
+						dangerzone[y][x]--;
 						status = true;
 						break;
 					default: break;
