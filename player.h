@@ -53,6 +53,7 @@ private:
 	bool shouldBomb(unsigned short _x, unsigned short _y);
 	bool atPos(unsigned short x, unsigned short y);
 	bool findTarget(unsigned short x, unsigned short y, enum Playground::PlaygroundAccess access);
+	bool near(unsigned short _x,unsigned short _y);
 
 protected:
 	friend class Playground;

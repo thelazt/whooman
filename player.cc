@@ -90,14 +90,21 @@ bool Player::findTarget(unsigned short x, unsigned short y, enum Playground::Pla
 	return true;
 }
 
+bool Player::near(unsigned short _x,unsigned short _y){
+	short tX = (_x * tileSize + tileSize/2) << factor;
+	short tY = (_y * tileSize + tileSize/2) << factor;
+	short limit = tileSize / 2;
+	return (tX > x ? (tX - x) : (x - tX)) < limit && (tY > y ? (tY - y) : (y - tY)) < limit;
+}
+
 
 void Player::move(enum PlayerDir _dir){
 	if (alive){
 		unsigned short fx, fy;
 		getPos(fx, fy);
 		if (_dir == MOVE_AUTO){
-			if (fx == targetX && fy == targetY){
-				if (!cover && (shouldBomb(fx + 1, fy) || shouldBomb(fx - 1, fy) || shouldBomb(fx, fy + 1) || shouldBomb(fx, fy - 1)) &&	bomb())
+			if (near(targetX, targetY)){
+				if (!cover && !playground.danger(fx,fy) && (shouldBomb(fx + 1, fy) || shouldBomb(fx - 1, fy) || shouldBomb(fx, fy + 1) || shouldBomb(fx, fy - 1)) && bomb())
 					cover = true;
 				if (cover && !playground.danger(fx,fy))
 					wait = true;

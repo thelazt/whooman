@@ -198,8 +198,8 @@ void Playground::tick(){
 					case CELL_FIRE:
 						c.value = 0;
 						c.type = CELL_GRASS;
-						assert(dangerzone[y][x] > 0);
-						dangerzone[y][x]--;
+						if (dangerzone[y][x] > 0)
+							dangerzone[y][x]--;
 						status = true;
 						break;
 					default: break;
