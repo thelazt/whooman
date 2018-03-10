@@ -4,10 +4,11 @@
 class Player;
 #include "def.h"
 #include "sprite.h"
+#include "playground.h"
 
 class Player {
 public:
-	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_HEAVEN = 4, MOVE_WON = 5, MOVE_AUTO = 0xff};
+	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_HEAVEN = 4, MOVE_WON = 5, MOVE_WAIT = 0xf, MOVE_AUTO = 0xff};
 	enum PlayerPoints { 
 		POINT_SURVIVE       = 100000,
 		POINT_KILL_PLAYER   = 10000,
@@ -33,25 +34,29 @@ private:
 	unsigned short speed;
 	unsigned short sickness;
 	unsigned int points;
+	
 	bool alive;
 	enum PlayerDir dir;
+	unsigned int counter;
 	unsigned short ani;
 	unsigned short tileSize;
 
 	// Bot specific
 	unsigned short targetX, targetY;
 	unsigned short previousX, previousY;
-	enum PlayerDir previousDir;
-	bool wait;
-
 
 	Sprite skin;
 	static unsigned short idCounter;
 
 	const unsigned short factor = 2;
 
+	bool shouldBomb(unsigned short _x, unsigned short _y);
+	bool atPos(unsigned short x, unsigned short y);
+	bool findTarget(unsigned short x, unsigned short y, enum Playground::PlaygroundAccess access);
 
-	bool isThisAGoodPlaceForABomb();
+protected:
+	friend class Playground;
+	bool wait, cover;
 
 public:
 	Player();
@@ -64,7 +69,7 @@ public:
 
 	void move(enum PlayerDir _dir = MOVE_AUTO);
 
-	void bomb();
+	bool bomb();
 
 	void addPoint(enum PlayerPoints event);
 

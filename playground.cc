@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cassert>  
+#include <cassert>
 
 #include "playground.h"
 #include "player.h"
@@ -38,8 +38,12 @@ void Playground::access(unsigned short x, unsigned short y, unsigned short _play
 			break;
 		case CELL_ITEM:
 			player[_player].item((enum ItemType) c.extra);
-			c.value = 0;
 			c.type = CELL_GRASS;
+			c.surface = 0;
+			c.sprite = 0;
+			c.tick = 0;
+			c.player = 0;
+			c.extra = 0;
 			arena->update();
 			break;
 		case CELL_FIRE:
@@ -48,6 +52,7 @@ void Playground::access(unsigned short x, unsigned short y, unsigned short _play
 			player[_player].die();
 			break;
 		case CELL_BOMB:
+			// we could still be ON the bomb we've just planted
 			break;
 		default:
 			// error
@@ -69,6 +74,7 @@ bool Playground::fire(unsigned short x, unsigned short y, unsigned short _player
 		case CELL_GRASS:
 			c.value = 0;
 			c.type = CELL_FIRE;
+			c.danger = 1;
 			[[gnu::fallthrough]];
 		case CELL_FIRE:
 			c.player = _player;
@@ -94,11 +100,14 @@ void Playground::explode(unsigned short x, unsigned short y, unsigned short _pla
 	cell &c = field[y][x];
 	assert(c.type == CELL_BOMB);
 	player[(int)c.player].item(ITEM_BOMB);
+	player[(int)c.player].wait = false;
+	player[(int)c.player].cover = false;
 	unsigned short power = c.extra;
 	c.value = 0;
 	c.type = CELL_FIRE;
 	c.player = _player;
 	c.tick = TICK_FIRE;
+	c.danger = 1;
 	for (unsigned short _x = x - 1; _x >= max<short>(1, ((short)x) - power); _x--)
 		if (!fire(_x, y, _player))
 			break;
@@ -153,6 +162,26 @@ bool Playground::bomb(unsigned short x, unsigned short y, unsigned short _player
 	} else
 		return false;
 }
+
+bool Playground::danger(unsigned short x, unsigned short y){
+	return field[y][x].danger == 1;
+}
+
+bool Playground::accessible(unsigned short x, unsigned short y, enum PlaygroundAccess access){
+	switch (access){
+		case ACCESS_SAFE:
+			if (field[y][x].danger == 1)
+				return false;
+			[[gnu::fallthrough]];
+		case ACCESS_DANGEROUS:
+			if (field[y][x].type == CELL_FIRE)
+				return false;
+			[[gnu::fallthrough]];
+		default:
+			return field[y][x].type & CELL_ACCESSIBLE;
+	}
+}
+
 
 void Playground::tick(){
 	bool status = false;

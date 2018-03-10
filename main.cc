@@ -80,6 +80,8 @@ int main(){
 				quit = 1;
 			}
 		}
+		for (int p = 1; p < playground.playerCount(); p++)
+			player[p].move(Player::MOVE_AUTO);
 		if (i++ % 16 == 0)
 			playground.tick();
 		playground.draw();

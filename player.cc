@@ -8,21 +8,25 @@
 
 unsigned short Player::idCounter = 0;
 
-Player::Player() : id(idCounter++){}
+Player::Player() : id(idCounter++), counter(0) {}
 
 void Player::reset(unsigned short _x, unsigned short _y, unsigned short _tileSize){
 	tileSize = _tileSize;
 	x = (_x * tileSize + tileSize/2) << factor;
 	y = (_y * tileSize + tileSize/2) << factor;
+	previousX = _x;
+	previousY = _y;
 	offsetXabs = offsetX + playground.getArena().offsetX;
 	offsetYabs = offsetY + playground.getArena().offsetY;
+	findTarget(_x,_y, Playground::ACCESS_DANGEROUS);
+	wait = false;
+	cover = false;
 	points = 0;
 	alive = true;
 	power = 2;
 	bombs = 1;
 	speed = 1;
 	sickness = 0;
-	dir = MOVE_DOWN;
 	ani = 1;
 }
 
@@ -35,32 +39,97 @@ void Player::load(const char * path, unsigned short _size, unsigned short _figur
 }
 
 
+bool Player::shouldBomb(unsigned short _x,unsigned short _y){
+	if (playground.get(_x, _y).type == CELL_BLOCK)
+		return true;
+	for (int p = 0; p < playground.playerCount(); p++)
+		if (p != id && player[p].atPos(_x, _y) && random() % 2)
+			return true;
+	return false;
+}
+
+bool Player::atPos(unsigned short _x,unsigned short _y){
+	return alive && (_x == (x >> factor) / tileSize) && (_y == (y >> factor) / tileSize);
+}
+
+
 void Player::getPos(unsigned short &_x,unsigned short &_y){
 	_x = (x >> factor) / tileSize;
 	_y = (y >> factor) / tileSize;
 }
 
-void Player::move(enum PlayerDir _dir){
-	static unsigned int counter = 0;
-	if (alive){
-		if (_dir == MOVE_AUTO){
-			
+bool Player::findTarget(unsigned short x, unsigned short y, enum Playground::PlaygroundAccess access){
+	struct xyd {
+		unsigned short x, y; 
+		enum PlayerDir dir;
+		void set(unsigned short _x, unsigned short _y, enum PlayerDir _dir){ x = _x; y = _y;  dir = _dir; };
+	};
+	struct xyd target[4];
+	unsigned short targets = 0;
+	if (playground.accessible(x + 1, y, access))
+		target[targets++].set(x + 1, y, MOVE_RIGHT );
+	if (playground.accessible(x - 1, y, access))
+		target[targets++].set(x - 1, y, MOVE_LEFT);
+	if (playground.accessible(x, y + 1, access))
+		target[targets++].set(x, y + 1, MOVE_DOWN);
+	if (playground.accessible(x, y - 1, access))
+		target[targets++].set(x, y - 1, MOVE_UP);
+		
+	int i = 0;
+	if (targets == 0)
+		return false;
+	else if (targets > 1){
+		i = number() % targets;
+		if (target[i].x == previousX && target[i].y == previousY){
+			target[i] = target[targets - 1];
+			i = number() % (targets - 1);
 		}
-		// 
+	}
+	previousX = x;
+	previousY = y;
+	targetX = target[i].x;
+	targetY = target[i].y;
+	dir = target[i].dir;
+	printf("%d targets %d %d with %d\n",id, targetX, targetY, (int)dir);
+	return true;
+}
+
+
+void Player::move(enum PlayerDir _dir){
+	if (alive){
+		unsigned short fx, fy;
+		getPos(fx, fy);
+		if (_dir == MOVE_AUTO){
+//			printf("%d: %d == %d && %d == %d, %d\n", id, fx,  targetX, fy, targetY, (int) dir); 
+			if (fx == targetX && fy == targetY){
+
+				if (!cover && (shouldBomb(fx + 1, fy) || shouldBomb(fx - 1, fy) || shouldBomb(fx, fy + 1) || shouldBomb(fx, fy - 1)) &&	bomb())
+					cover = true;
+				if (cover && !playground.danger(fx,fy))
+					wait = true;
+				if (!wait && (number() % 3 != 0 || findTarget(fx, fy, Playground::ACCESS_SAFE)))
+					if (!findTarget(fx, fy, Playground::ACCESS_DANGEROUS))
+						return;
+			}
+			if (wait)
+				return;
+		} else {
+			dir = _dir;
+		}
+
 		short dirY = 0, dirX = 0;
 		unsigned short s = (32 + speed);
-		switch(_dir) {
+		switch(dir) {
 			case MOVE_UP: dirY = -s; break;
 			case MOVE_DOWN: dirY = s; break;
 			case MOVE_LEFT: dirX = -s; break;
 			case MOVE_RIGHT: dirX = s; break;
-			default: break;
+			default: return;
 		}
-		dir = _dir;
+	if (id == 1) printf("Dir == %d \n", dir);
 		if (counter++ % 2 == 0)
 			ani++;
-		unsigned short fx, fy;
-		getPos(fx, fy);
+
 		if (dirX <= 0)
 			x = max<unsigned short>(x + dirX, playground.accessible(fx - 1, fy) ? 0 : ((fx * tileSize + figureSpace) << factor));
 		if (dirX >= 0)
@@ -75,14 +144,16 @@ void Player::move(enum PlayerDir _dir){
 	}
 }
 
-void Player::bomb(){
+bool Player::bomb(){
 	if (alive && bombs > 0){
 		unsigned short fx, fy;
 		getPos(fx, fy);
 		if (playground.bomb(fx, fy, id, power, TICK_BOMB)){
 			bombs--;
+			return true;
 		}
 	}
+	return false;
 }
 
 void Player::addPoint(enum PlayerPoints event){

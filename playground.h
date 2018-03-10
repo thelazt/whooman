@@ -23,10 +23,15 @@ private:
 	bool dangerzone(unsigned short x, unsigned short y);
 
 public:
+	enum PlaygroundAccess { ACCESS_DEADLY, ACCESS_DANGEROUS, ACCESS_SAFE };
 	const unsigned short width;
 	const unsigned short height;
 
 	Playground(unsigned short _width = 15, unsigned short _height = 13) : width(_width > maxWidth ? maxWidth : _width), height(_height > maxHeight ? maxHeight : _height) {
+	}
+
+	unsigned short playerCount(){
+		return players;
 	}
 
 	void dump();
@@ -37,10 +42,6 @@ public:
 		return field[y][x];
 	}
 
-	bool accessible(unsigned short x, unsigned short y){
-		return field[y][x].type & CELL_ACCESSIBLE;
-	}
-
 	Arena& getArena(){
 		return *arena;
 	}
@@ -48,6 +49,10 @@ public:
 	bool create(Arena& _arena, Layout& layout, unsigned short _players = 4);
 
 	bool bomb(unsigned short x, unsigned short y, unsigned short _player, unsigned short power, unsigned short ticks);
+
+	bool accessible(unsigned short x, unsigned short y, enum PlaygroundAccess access = ACCESS_DEADLY);
+
+	bool danger(unsigned short x, unsigned short y);
 	
 	void tick();
 	void draw(bool tick = false);

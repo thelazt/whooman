@@ -54,7 +54,6 @@ void Layout::defaultItems(Playground& ground){
 	// Shuffle
 	for (unsigned short b = blocks - 1; b > 0; b--){
 		int i = number() % b;
-		struct xy tmp = block[i];
 		cell &c = ground.get(block[i].x, block[i].y);
 		int j = number() % 100;
 		for(int d = 0; d < 5; d++)
