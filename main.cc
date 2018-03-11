@@ -1,10 +1,9 @@
 #include <iostream>
 #include <stdint.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cstdlib>
+#include <cmath>
 #include <unistd.h>
 #include <ctime>
-#include <random>
 
 
 #include "SDL/SDL.h"
@@ -27,11 +26,11 @@ SDL_Event event;
 Screen screen(1024,768);
 
 int number(){
-	return std::rand();
+	return rand();
 }
 
 int main(){
-	std::srand(std::time(nullptr));
+	srand(time(NULL));
 
 	SDL_EnableKeyRepeat(100, SDL_DEFAULT_REPEAT_INTERVAL);
 
@@ -47,45 +46,106 @@ int main(){
 
 	int quit = 0;
 	unsigned int i = 0;
+	enum Player::PlayerDir move[4];
+	move[0] = move[3] = Player::MOVE_WAIT;
+	move[1] = move[2] = Player::MOVE_AUTO;
 	while(!quit) {
 		while(SDL_PollEvent(&event)) {
-			if (event.type == SDL_KEYDOWN) {
-				switch(event.key.keysym.sym) {
-					case SDLK_UP:
-						player[0].move(Player::MOVE_UP);
-						break;
-					case SDLK_DOWN:
-						player[0].move(Player::MOVE_DOWN);
-						break;
-					case SDLK_LEFT:
-						player[0].move(Player::MOVE_LEFT);
-						break;
-					case SDLK_RIGHT:
-						player[0].move(Player::MOVE_RIGHT);
-						break;
-					case SDLK_SPACE:
-						player[0].bomb();
-						break;
-					case SDLK_d:
-						playground.dump();
-						break;
-					case SDLK_ESCAPE:
-						quit = 1;
-						break;
-					default:
-						break;
-				}
-			}
-			else if (event.type == SDL_QUIT) {
-				quit = 1;
+			switch (event.type){
+				case SDL_KEYDOWN:
+					switch(event.key.keysym.sym) {
+						case SDLK_UP:
+							move[3] = Player::MOVE_UP;
+							break;
+						case SDLK_DOWN:
+							move[3] = Player::MOVE_DOWN;
+							break;
+						case SDLK_LEFT:
+							move[3] = Player::MOVE_LEFT;
+							break;
+						case SDLK_RIGHT:
+							move[3] = Player::MOVE_RIGHT;
+							break;
+						case SDLK_SPACE:
+							player[3].bomb();
+							break;
+
+						case SDLK_w:
+							move[0] = Player::MOVE_UP;
+							break;
+						case SDLK_s:
+							move[0] = Player::MOVE_DOWN;
+							break;
+						case SDLK_a:
+							move[0] = Player::MOVE_LEFT;
+							break;
+						case SDLK_d:
+							move[0] = Player::MOVE_RIGHT;
+							break;
+						case SDLK_LSHIFT:
+							player[0].bomb();
+							break;
+
+						case SDLK_ESCAPE:
+							quit = 1;
+							break;
+						default:
+							break;
+					}
+					break;
+
+				case SDL_KEYUP:
+					switch(event.key.keysym.sym) {
+						case SDLK_UP:
+							if (move[3] == Player::MOVE_UP)
+								move[3] = Player::MOVE_WAIT;
+							break;
+						case SDLK_DOWN:
+							if (move[3] == Player::MOVE_DOWN)
+								move[3] = Player::MOVE_WAIT;
+							break;
+						case SDLK_LEFT:
+							if (move[3] == Player::MOVE_LEFT)
+								move[3] = Player::MOVE_WAIT;
+							break;
+						case SDLK_RIGHT:
+							if (move[3] == Player::MOVE_RIGHT)
+								move[3] = Player::MOVE_WAIT;
+							break;
+
+						case SDLK_w:
+							if (move[0] == Player::MOVE_UP)
+								move[0] = Player::MOVE_WAIT;
+							break;
+						case SDLK_s:
+							if (move[0] == Player::MOVE_DOWN)
+								move[0] = Player::MOVE_WAIT;
+							break;
+						case SDLK_a:
+							if (move[0] == Player::MOVE_LEFT)
+								move[0] = Player::MOVE_WAIT;
+							break;
+						case SDLK_d:
+							if (move[0] == Player::MOVE_RIGHT)
+								move[0] = Player::MOVE_WAIT;
+							break;
+
+						default:
+							break;
+					}
+					break;
+
+				case SDL_QUIT:
+					quit = 1;
+					break;
 			}
 		}
-		for (int p = 1; p < playground.playerCount(); p++)
-			player[p].move(Player::MOVE_AUTO);
-		if (i++ % 16 == 0)
+		for (int p = 0; p < playground.playerCount(); p++)
+			player[p].move(move[p]);
+		if (i++ % 4 == 0)
 			playground.tick();
 		playground.draw();
-		usleep(5000);
+		usleep(10000);
 	}
 
 	return 0;

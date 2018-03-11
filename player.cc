@@ -99,7 +99,7 @@ bool Player::near(unsigned short _x,unsigned short _y){
 
 
 void Player::move(enum PlayerDir _dir){
-	if (alive){
+	if (alive && _dir <= MOVE_AUTO){
 		unsigned short fx, fy;
 		getPos(fx, fy);
 		if (_dir == MOVE_AUTO){

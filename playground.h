@@ -23,6 +23,8 @@ private:
 	bool fire(unsigned short x, unsigned short y, unsigned short _player);
 	void explode(unsigned short x, unsigned short y, unsigned short _player);
 	bool dangerous(unsigned short x, unsigned short y);
+	void dangerous(unsigned short x, unsigned short y, unsigned short power);
+	void reevaluate();
 
 public:
 	enum PlaygroundAccess { ACCESS_DEADLY, ACCESS_DANGEROUS, ACCESS_SAFE };

@@ -8,7 +8,7 @@ class Player;
 
 class Player {
 public:
-	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_HEAVEN = 4, MOVE_WON = 5, MOVE_WAIT = 0xf, MOVE_AUTO = 0xff};
+	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_AUTO = 0xf, MOVE_HEAVEN = 0xf0, MOVE_WON = 0xf1, MOVE_WAIT = 0xff};
 	enum PlayerPoints { 
 		POINT_SURVIVE       = 100000,
 		POINT_KILL_PLAYER   = 10000,

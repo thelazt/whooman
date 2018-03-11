@@ -118,6 +118,25 @@ void Playground::explode(unsigned short x, unsigned short y, unsigned short _pla
 			break;
 }
 
+void Playground::reevaluate(){
+	// Reset
+	for (unsigned short y = 0; y < playground.height; y++)
+		for (unsigned short x = 0; x < playground.width; x++)
+			dangerzone[y][x] = 0;
+	for (unsigned short y = 0; y < playground.height; y++)
+		for (unsigned short x = 0; x < playground.width; x++){
+			cell &c = field[y][x];
+			switch (c.type){
+				case CELL_BOMB:
+					dangerous(x, y, c.extra);
+					break;
+				case CELL_FIRE:
+					dangerzone[y][x]++;
+					break;
+			}
+		}
+}
+
 bool Playground::dangerous(unsigned short x, unsigned short y){
 	// Check cells
 	cell &c = field[y][x];
@@ -133,6 +152,22 @@ bool Playground::dangerous(unsigned short x, unsigned short y){
 	}
 }
 
+void Playground::dangerous(unsigned short x, unsigned short y, unsigned short power){
+	dangerzone[y][x]++;
+	for (unsigned short _x = x - 1; _x >= max<short>(1, ((short)x) - power); _x--)
+		if (!dangerous(_x, y))
+			break;
+	for (unsigned short _x = x + 1; _x <= min<unsigned short>(width - 2, x + power); _x++)
+		if (!dangerous(_x, y))
+			break;
+	for (unsigned short _y = y - 1; _y >= max<short>(1, ((short)y) - power); _y--)
+		if (!dangerous(x, _y))
+			break;
+	for (unsigned short _y = y + 1; _y <= min<unsigned short>(height - 2, y + power); _y++)
+		if (!dangerous(x, _y))
+			break;
+}
+
 bool Playground::bomb(unsigned short x, unsigned short y, unsigned short _player, unsigned short power, unsigned short ticks){
 	cell &c = field[y][x];
 	if (c.type == CELL_GRASS){
@@ -141,19 +176,7 @@ bool Playground::bomb(unsigned short x, unsigned short y, unsigned short _player
 		c.player = _player;
 		c.extra = power;
 		// Mark dangerzone
-		dangerzone[y][x]++;
-		for (unsigned short _x = x - 1; _x >= max<short>(1, ((short)x) - power); _x--)
-			if (!dangerous(_x, y))
-				break;
-		for (unsigned short _x = x + 1; _x <= min<unsigned short>(width - 2, x + power); _x++)
-			if (!dangerous(_x, y))
-				break;
-		for (unsigned short _y = y - 1; _y >= max<short>(1, ((short)y) - power); _y--)
-			if (!dangerous(x, _y))
-				break;
-		for (unsigned short _y = y + 1; _y <= min<unsigned short>(height - 2, y + power); _y++)
-			if (!dangerous(x, _y))
-				break;
+		dangerous(x, y, power);
 		return true;
 	} else
 		return false;
@@ -193,6 +216,7 @@ void Playground::tick(){
 					case CELL_BLOCKONFIRE:
 						c.player = 0;
 						c.type = c.extra == 0 ? CELL_GRASS : CELL_ITEM;
+						reevaluate();
 						status = true;
 						break;
 					case CELL_FIRE:
