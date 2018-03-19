@@ -11,14 +11,14 @@
 #include "screen.h"
 #include "playground.h"
 #include "layout.h"
-#include "arena.h"
+#include "arena_default.h"
 #include "player.h"
 
 
 using namespace std;
 
 
-Arena arena_default(10,10);
+ArenaTest arena_default(10,10);
 Layout layout_default;
 
 SDL_Event event;

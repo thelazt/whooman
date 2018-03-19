@@ -3,8 +3,13 @@
 #include <cassert>
 #include <iostream>
 
-Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) : bomb("img/default_bomb.png", _tileSize, _tileSize), fire("img/default_fire.png", _tileSize, _tileSize), item("img/default_items.png", _tileSize, _tileSize), ground("img/playground_default.png", _tileSize, _tileSize), offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {
-	}
+Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize, const char * groundSprite, const unsigned short blockAni, const char * bombSprite, const char * fireSprite, const char * itemSprite) : 
+	ground(groundSprite, _tileSize, _tileSize),
+	bomb(bombSprite, _tileSize, _tileSize),
+	fire(fireSprite, _tileSize, _tileSize),
+	item(itemSprite, _tileSize, _tileSize),
+	blockAni(blockAni),
+	offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {};
 
 void Arena::draw(bool tick){
 	for (unsigned short y = 0; y < playground.height; y++)
@@ -12,10 +17,21 @@ void Arena::draw(bool tick){
 			cell &c = playground.get(x, y);
 			unsigned short _x = x * tileSize + offsetX;
 			unsigned short _y = y * tileSize + offsetY;
-			ground.draw(c.surface, _x, _y);
+
+			ground.draw(c.surface + (c.type == CELL_BLOCK ? c.tick % blockAni : 0), _x, _y);
+
 			switch (c.type){
 				case CELL_BLOCKONFIRE:
-					ground.draw(10 - c.tick, _x, _y);
+					{
+						unsigned short sprite = TICK_FIRE - c.tick;
+						if (sprite == 0)
+							sprite = 10;
+						else if (sprite > 6)
+							break;
+						else
+							sprite += 3;
+						ground.draw(sprite, _x, _y);
+					}
 					break;
 				case CELL_ITEM:
 					item.draw((c.tick % 2) * 5 + c.extra - 1, _x, _y);
@@ -26,7 +42,8 @@ void Arena::draw(bool tick){
 				case CELL_FIRE:
 					fire.draw(((c.tick % 9) > 4 ? (6 - (c.tick % 7)) : c.tick) * 7 + c.sprite , _x, _y);
 					break;
-				default: break;
+				default: 
+					break;
 			}
 		}
 }
@@ -65,21 +82,23 @@ unsigned short Arena::fireSprite(unsigned short x, unsigned short y){
 }
 
 void Arena::update(){
-	for (unsigned short y = 0; y < playground.height; y++)
-		for (unsigned short x = 0; x < playground.width; x++){
+	for (unsigned short y = 1; y < playground.height - 1; y++)
+		for (unsigned short x = 1; x < playground.width - 1; x++){
 			cell &c = playground.get(x, y);
 			switch (c.type){
-				case CELL_FIRE:
-					c.sprite = fireSprite(x, y);
-					break;
 				case CELL_WALL:
 					c.surface = 3;
 					break;
 				case CELL_BLOCK:
 					c.surface = 10;
 					break;
+				case CELL_FIRE:
+					c.sprite = fireSprite(x, y);
+				[[gnu::fallthrough]];
 				default: 
-					if (y > 0)
+					if (y <= 0)
+						c.surface = 0;
+					else
 						switch (playground.get(x, y-1).type){
 							case CELL_WALL:
 								c.surface = 1;
@@ -94,9 +113,35 @@ void Arena::update(){
 		}
 }
 
-void Arena::background(){}
+unsigned short Arena::decorate(short x, short y){
+	if (x >= 0 && x < playground.width && y <= playground.height)
+		return y < playground.height ? 3 : 1;
+	else
+		return 0;
+}
 
-void Arena::foreground(){
+
+void Arena::create(){
+	// outside
+	for (short y = 0; offsetY + y * tileSize < (short)(screen.height + tileSize); y++){
+		for (short x = -1; offsetX + x * tileSize > -((short)tileSize); x--)
+			ground.draw(decorate(x,y), offsetX + x * tileSize, offsetY + y * tileSize);
+		if (y >= playground.height)
+			for (short x = 0; x < playground.width; x++)
+				ground.draw(decorate(x,y), offsetX + x * tileSize, offsetY + y * tileSize);
+		for (short x = playground.width; offsetX + x * tileSize < (short)(screen.width + tileSize); x++)
+			ground.draw(decorate(x,y), offsetX + x * tileSize, offsetY + y * tileSize);
+	}
+	// Border
+	for (unsigned short y = 0; y < playground.height; y++){
+		playground.get(0, y).surface = decorate(0, y);
+		playground.get(playground.width - 1, y).surface = decorate(playground.width - 1, y);
+	}
+	for (unsigned short x = 0; x < playground.width; x++){
+		playground.get(x, 0).surface = decorate(x, 0);
+		playground.get(x, playground.height - 1).surface = decorate(x, playground.height - 1);
+	}
+	// Foreground
 	update();
 }
 

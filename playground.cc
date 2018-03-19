@@ -11,8 +11,7 @@ bool Playground::create(Arena& _arena, Layout& layout, unsigned short _players){
 	else {
 		arena = &_arena;
 		layout.setup(*this, _players);
-		_arena.background();
-		_arena.foreground();
+		_arena.create();
 		players = _players;
 		for (unsigned short y = 0; y < playground.height; y++)
 			for (unsigned short x = 0; x < playground.width; x++)

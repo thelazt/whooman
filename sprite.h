@@ -17,7 +17,7 @@ public:
 
 	void load(const char * path, unsigned short w = defaultTileSize, unsigned short h = defaultTileSize);
 
-	void draw(unsigned short num, unsigned short x, unsigned short y);
+	void draw(unsigned short num, short x, short y);
 };
 
 #endif

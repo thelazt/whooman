@@ -32,9 +32,9 @@ void Sprite::load(const char * path, unsigned short w, unsigned short h){
 	}
 }
 
-void Sprite::draw(unsigned short  num, unsigned short x, unsigned short y){
+void Sprite::draw(unsigned short num, short x, short y){
 	SDL_Rect rcSrc = { 0, (short) (num * height), width, height};
-	SDL_Rect rcDest = { (short) x, (short) y, width, height};
+	SDL_Rect rcDest = { x, y, width, height};
 	int r = SDL_BlitSurface ( img, &rcSrc, screen.content, &rcDest );
 	if (r != 0){
 		std::cout << "SDL_BlitSurface Error: " <<IMG_GetError() << std::endl;
