@@ -8,7 +8,7 @@ class Arena;
 
 class Arena {
 protected:
-	Sprite bomb, fire, item, ground, danger;
+	Sprite bomb, fire, item, ground;
 
 	unsigned short fireSprite(unsigned short x, unsigned short y);
 

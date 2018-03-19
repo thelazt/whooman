@@ -3,7 +3,7 @@
 #include <cassert>
 #include <iostream>
 
-Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) : bomb("img/default_bomb.png", _tileSize, _tileSize), fire("img/default_fire.png", _tileSize, _tileSize), item("img/default_items.png", _tileSize, _tileSize), ground("img/playground_default.png", _tileSize, _tileSize), danger("img/default_danger.png", _tileSize, _tileSize), offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {
+Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) : bomb("img/default_bomb.png", _tileSize, _tileSize), fire("img/default_fire.png", _tileSize, _tileSize), item("img/default_items.png", _tileSize, _tileSize), ground("img/playground_default.png", _tileSize, _tileSize), offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {
 	}
 
 void Arena::draw(bool tick){
@@ -24,13 +24,10 @@ void Arena::draw(bool tick){
 					bomb.draw((c.tick % 4) == 3 ? 1 : (c.tick % 4), _x, _y);
 					break;
 				case CELL_FIRE:
-					fire.draw(((c.tick % 9) > 4 ? (8 - (c.tick % 9)) : c.tick) * 9 + c.sprite , _x, _y);
+					fire.draw(((c.tick % 9) > 4 ? (6 - (c.tick % 7)) : c.tick) * 7 + c.sprite , _x, _y);
 					break;
 				default: break;
 			}
-			// debug
-			if (playground.danger(x, y))
-				danger.draw((c.tick % 2), _x, _y);
 		}
 }
 
@@ -63,7 +60,7 @@ unsigned short Arena::fireSprite(unsigned short x, unsigned short y){
 				return 5;
 			[[gnu::fallthrough]];
 		default:
-			return 8;
+			return 6;
 	}
 }
 
@@ -71,20 +68,29 @@ void Arena::update(){
 	for (unsigned short y = 0; y < playground.height; y++)
 		for (unsigned short x = 0; x < playground.width; x++){
 			cell &c = playground.get(x, y);
-			if (c.type == CELL_FIRE)
-				c.sprite = fireSprite(x, y);
-			// Surface
 			switch (c.type){
-				case CELL_WALL:
-					c.surface = 2;
+				case CELL_FIRE:
+					c.sprite = fireSprite(x, y);
 					break;
-				case CELL_BLOCK:
+				case CELL_WALL:
 					c.surface = 3;
 					break;
+				case CELL_BLOCK:
+					c.surface = 10;
+					break;
 				default: 
-					c.surface = y > 0 && playground.get(x, y-1).type <= CELL_BLOCK? 1 : 0;
+					if (y > 0)
+						switch (playground.get(x, y-1).type){
+							case CELL_WALL:
+								c.surface = 1;
+								break;
+							case CELL_BLOCK:
+								c.surface = 2;
+								break;
+							default:
+								c.surface = 0;
+						}
 			}
-
 		}
 }
 

@@ -16,6 +16,8 @@ private:
 	cell field[maxHeight][maxWidth];
 	unsigned char dangerzone[maxHeight][maxWidth];
 
+	enum GameState state;
+
 	Arena * arena;
 	unsigned short players;
 
@@ -31,7 +33,7 @@ public:
 	const unsigned short width;
 	const unsigned short height;
 
-	Playground(unsigned short _width = 15, unsigned short _height = 13) : width(_width > maxWidth ? maxWidth : _width), height(_height > maxHeight ? maxHeight : _height) {
+	Playground(unsigned short _width = 15, unsigned short _height = 13) :  state(GAME_ACTIVE), width(_width > maxWidth ? maxWidth : _width), height(_height > maxHeight ? maxHeight : _height) {
 	}
 
 	unsigned short playerCount(){
@@ -57,8 +59,11 @@ public:
 	bool accessible(unsigned short x, unsigned short y, enum PlaygroundAccess access = ACCESS_DEADLY);
 
 	bool danger(unsigned short x, unsigned short y);
-	
-	void tick();
+
+	enum GameState check();
+
+	enum GameState tick();
+
 	void draw(bool tick = false);
 };
 

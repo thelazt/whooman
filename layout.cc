@@ -15,7 +15,6 @@ struct {
 
 
 void Layout::defaultLayout(Playground& ground){
-	const int blockProbability = 80;
 	for (unsigned short y = 0; y < ground.height; y++)
 		for (unsigned short x = 0; x < ground.width; x++){
 			cell& c = ground.get(x,y);
@@ -27,7 +26,7 @@ void Layout::defaultLayout(Playground& ground){
 			else if (y % 2  == 0 && x % 2 == 0 )
 				c.type = CELL_WALL;
 			// Blocks
-			else if (((x > 2 && x <ground. width - 3) || (y > 2 && y < ground.height - 3)) /* && random() % 100 < blockProbability */)
+			else if ((x > 2 && x <ground. width - 3) || (y > 2 && y < ground.height - 3))
 				c.type = CELL_BLOCK;
 			// Grass
 			else 
@@ -44,7 +43,7 @@ void Layout::defaultItems(Playground& ground){
 	struct xy {
 		unsigned short x, y; 
 	};
-	// Save all CELL_BLOK
+	// Save all CELL_BLOCK
 	struct xy block[ground.height * ground.width];
 	unsigned short blocks = 0;
 	for (unsigned short y = 0; y < ground.height; y++)

@@ -112,8 +112,12 @@ void Player::move(enum PlayerDir _dir){
 					if (!findTarget(fx, fy, Playground::ACCESS_DANGEROUS))
 						return;
 			}
-			if (wait)
-				return;
+			if (wait){
+				if (playground.danger(fx,fy) && (findTarget(fx, fy, Playground::ACCESS_SAFE) || findTarget(fx, fy, Playground::ACCESS_DANGEROUS)))
+					wait = false;
+				else
+					return;
+			}
 		} else {
 			dir = _dir;
 		}
@@ -181,8 +185,15 @@ void Player::die(){
 		alive = false;
 		dir = MOVE_HEAVEN;
 		ani = 0;
-		// TODO: Check survivors
+		playground.check();
 	}
+}
+
+void Player::win(){
+	dir = Player::MOVE_WON;
+	ani = 0;
+	alive = false;
+	points += POINT_SURVIVE;
 }
 
 void Player::draw(bool tick){

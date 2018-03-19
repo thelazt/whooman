@@ -133,6 +133,8 @@ void Playground::reevaluate(){
 				case CELL_FIRE:
 					dangerzone[y][x]++;
 					break;
+				default:
+					break;
 			}
 		}
 }
@@ -201,7 +203,27 @@ bool Playground::accessible(unsigned short x, unsigned short y, enum PlaygroundA
 	}
 }
 
-void Playground::tick(){
+enum GameState Playground::check(){
+	if (state == GAME_ACTIVE){
+		int survivors = 0;
+		int last = -1;
+		for (int p = 0; p < playground.playerCount(); p++)
+			if (player[p].alive){
+				survivors++;
+				last = p;
+			}
+		if (survivors == 1){
+			player[last].win();
+			state = GAME_WON;
+		}
+		else if (survivors == 0){
+			state = GAME_DRAW;
+		}
+	}
+	return state;
+}
+
+enum GameState Playground::tick(){
 	bool status = false;
 	bool hasExplodingBomb = false;
 	for (unsigned short y = 0; y < playground.height; y++)
@@ -240,10 +262,14 @@ void Playground::tick(){
 				}
 			}
 
+	check();
+
 	if (status)
 		arena->update();
 
 	draw(true);
+
+	return state;
 }
 
 void Playground::draw(bool tick){

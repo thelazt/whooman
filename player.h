@@ -80,6 +80,8 @@ public:
 
 	void die();
 
+	void win();
+
 	void draw(bool tick = false);
 };
 
