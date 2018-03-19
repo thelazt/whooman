@@ -18,7 +18,7 @@
 using namespace std;
 
 
-ArenaTest arena_default(10,10);
+ArenaTest arena_default(100,10);
 Layout layout_default;
 
 SDL_Event event;
