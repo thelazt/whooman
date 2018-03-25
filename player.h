@@ -8,8 +8,9 @@ class Player;
 
 class Player {
 public:
-	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_AUTO = 0xf, MOVE_HEAVEN = 0xf0, MOVE_WON = 0xf1, MOVE_WAIT = 0xff};
-	enum PlayerPoints { 
+	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_BOMB = 4, MOVE_AUTO = 0xf, MOVE_HEAVEN = 0xf0, MOVE_WON = 0xf1, MOVE_WAIT = 0xff};
+
+	enum PlayerPoints {
 		POINT_SURVIVE       = 100000,
 		POINT_KILL_PLAYER   = 10000,
 		POINT_DESTROY_ITEM  = 1000,
@@ -18,7 +19,11 @@ public:
 		POINT_ALIVE         = 1
 	};
 
+	int keys[5];
+
 	const unsigned short id;
+
+	Sprite skin;
 
 private:
 	unsigned short size;
@@ -45,7 +50,6 @@ private:
 	unsigned short targetX, targetY;
 	unsigned short previousX, previousY;
 
-	Sprite skin;
 	static unsigned short idCounter;
 
 	const unsigned short factor = 2;
@@ -62,7 +66,7 @@ protected:
 public:
 	Player();
 
-	void reset(unsigned short _x, unsigned short _y, unsigned short _tileSize = defaultTileSize);
+	void init(unsigned short _x, unsigned short _y, unsigned short _tileSize = defaultTileSize);
 
 	void load(const char * path, unsigned short _size = 64, unsigned short _figureSpace = 20, short _offsetX = -31, short _offsetY = -46);
 
@@ -76,7 +80,15 @@ public:
 
 	unsigned int getPoints();
 
+	void resetPoints();
+
+	bool isAlive(){
+		return alive;
+	}
+
 	void item(enum ItemType _item);
+
+	void tick();
 
 	void die();
 

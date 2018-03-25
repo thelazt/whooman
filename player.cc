@@ -8,9 +8,12 @@
 
 unsigned short Player::idCounter = 0;
 
-Player::Player() : id(idCounter++), counter(0) {}
+Player::Player() : id(idCounter++), counter(0) {
+	for (size_t i = 0; i < 5 ; i++)
+		keys[i] = 0;
+}
 
-void Player::reset(unsigned short _x, unsigned short _y, unsigned short _tileSize){
+void Player::init(unsigned short _x, unsigned short _y, unsigned short _tileSize){
 	tileSize = _tileSize;
 	x = (_x * tileSize + tileSize/2) << factor;
 	y = (_y * tileSize + tileSize/2) << factor;
@@ -21,13 +24,16 @@ void Player::reset(unsigned short _x, unsigned short _y, unsigned short _tileSiz
 	findTarget(_x,_y, Playground::ACCESS_DANGEROUS);
 	wait = false;
 	cover = false;
-	points = 0;
 	alive = true;
 	power = 2;
 	bombs = 1;
 	speed = 1;
 	sickness = 0;
 	ani = 1;
+}
+
+void Player::resetPoints(){
+	points = 0;
 }
 
 void Player::load(const char * path, unsigned short _size, unsigned short _figureSpace, short _offsetX, short _offsetY){
@@ -192,26 +198,36 @@ void Player::die(){
 void Player::win(){
 	dir = Player::MOVE_WON;
 	ani = 0;
-	alive = false;
 	points += POINT_SURVIVE;
+}
+
+
+void Player::tick(){
+	if (alive)
+		points++;
 }
 
 void Player::draw(bool tick){
 	short num = -1;
-	if (dir == MOVE_HEAVEN && ani < 3){
-		num = ani;
+	if (dir == MOVE_HEAVEN && ani < 20){
+		if (ani < 2)
+			num = 12;
+		else if (ani < 4)
+			num = 13;
+		else
+			num = 14;
 		if (tick)
 			ani++;
 	} else if (dir == MOVE_WON){
-		num = ani;
+		num = 15 + ani / 3;
 		if (tick)
-			ani = (ani + 1) % 2;
+			ani = (ani + 1) % 6;
 	} else if (alive){
 		ani %= 4;
-		num = ani == 3 ? 1 : ani;
+		num = dir * 3 + (ani == 3 ? 1 : ani);
 	}
 	if (num >= 0)
-		skin.draw(dir * 3 + num, (x >> factor) + offsetXabs, (y >> factor) + offsetYabs);
+		skin.draw(num, (x >> factor) + offsetXabs, (y >> factor) + offsetYabs);
 }
 
 Player player[maxPlayer];

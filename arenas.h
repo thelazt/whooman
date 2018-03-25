@@ -1,5 +1,5 @@
-#ifndef _BOMB_ARENA_DEFAULT_H
-#define _BOMB_ARENA_DEFAULT_H
+#ifndef _BOMB_ARENAS_H
+#define _BOMB_ARENAS_H
 
 #include "arena.h"
 
@@ -20,7 +20,7 @@ public:
 class ArenaRetro: public Arena {
 public:
 	ArenaRetro(unsigned short _offsetX = 0, unsigned short _offsetY = 0, unsigned short _tileSize = defaultTileSize) : 
-		Arena(_offsetX, _offsetY, _tileSize, "img/playground_retro.png", 1, "img/retro_bomb.png", "img/retro_fire.png", "img/retro_items.png") {
+		Arena(_offsetX, _offsetY, _tileSize, "img/playground_retro.png", 1, "img/retro_bomb.png", "img/retro_fire.png", "img/retro_items.png", "img/retro_stats.png") {
 	};
 };
 

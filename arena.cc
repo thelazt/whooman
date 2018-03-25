@@ -1,5 +1,7 @@
 #include "arena.h"
 
+#include "player.h"
+
 #include <cassert>
 #include <iostream>
 
@@ -8,11 +10,14 @@ Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _t
 	bomb(bombSprite, _tileSize, _tileSize),
 	fire(fireSprite, _tileSize, _tileSize),
 	item(itemSprite, _tileSize, _tileSize),
-	stats(statsSprite, _tileSize / 2, _tileSize),
+	stats(statsSprite, defaultStatsWidth, defaultStatsHeight),
 	blockAni(blockAni),
 	offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {};
 
 void Arena::draw(bool tick){
+	// statusbar
+	for (short p = 0; p < 4 ; p++)
+		statusbar(p);
 	for (unsigned short y = 0; y < playground.getHeight(); y++)
 		for (unsigned short x = 0; x < playground.getWidth(); x++){
 			cell &c = playground.get(x, y);
@@ -121,12 +126,30 @@ unsigned short Arena::decorate(short x, short y){
 		return 0;
 }
 
+void Arena::statusbar(short p, bool init){
+	static bool alive[maxPlayer];
+	short screenPart = screen.width / playground.playerCount();
+	short start = screenPart * p;
+	short y = offsetY - defaultStatsHeight;
+	if (init || alive[p] != player[p].isAlive()){
+		alive[p] = player[p].isAlive();
+		for (short x = 0; x < screenPart; x += defaultStatsWidth)
+			stats.draw(12, x + start, y);
+		stats.draw(10, defaultStatsWidth * 3 + start, y);
+		stats.draw(11, defaultStatsWidth * 11 + start, y);
+		player[p].skin.draw(alive[p] ? 0 : 13, start, y, 0, 32);
+	}
+	unsigned int sum = player[p].getPoints();
+	for (short q = 10; q > 3 ; q--){
+		stats.draw(sum % 10, defaultStatsWidth * q + start, y);
+		sum /= 10;
+	}
+}
 
 void Arena::create(){
 	// statusbar
-	for (short x = 0; x<  (short)(screen.width + tileSize / 2); x += tileSize / 2){
-		stats.draw(4, x, offsetY - tileSize);
-	}
+	for (short p = 0; p < 4 ; p++)
+		statusbar(p, true);
 	// outside
 	for (short y = 0; offsetY + y * tileSize < (short)(screen.height + tileSize); y++){
 		for (short x = -1; offsetX + x * tileSize > -((short)tileSize); x--)

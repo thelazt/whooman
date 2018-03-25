@@ -8,6 +8,9 @@ class Playground;
 #include "layout.h"
 
 class Playground {
+public:
+	enum GameState { GAME_ACTIVE, GAME_DRAW, GAME_WON, GAME_ABORT, GAME_ERROR };
+	enum PlaygroundAccess { ACCESS_DEADLY, ACCESS_DANGEROUS, ACCESS_SAFE };
 
 private:
 	static const unsigned short maxWidth = 21;
@@ -31,10 +34,8 @@ private:
 	void reevaluate();
 
 public:
-	enum PlaygroundAccess { ACCESS_DEADLY, ACCESS_DANGEROUS, ACCESS_SAFE };
 
-
-	Playground() :  state(GAME_ACTIVE) {
+	Playground() : state(GAME_ACTIVE) {
 		dim();
 	}
 
@@ -55,8 +56,6 @@ public:
 		return players;
 	}
 
-	void dump();
-
 	void access(unsigned short x, unsigned short y, unsigned short _player);
 
 	cell& get(unsigned short x, unsigned short y){
@@ -67,7 +66,7 @@ public:
 		return *arena;
 	}
 
-	bool create(Arena& _arena, Layout& layout, unsigned short _players = 4);
+	bool create(Arena * _arena, Layout& layout, unsigned short _players = 4);
 
 	bool bomb(unsigned short x, unsigned short y, unsigned short _player, unsigned short power, unsigned short ticks);
 

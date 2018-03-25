@@ -19,7 +19,12 @@ $(BIN): $(OBJFILES)
 %.d: %.cc
 	$(CXX) $(INCDIRS) $(LIBS) -MM $< > $@
 
+install:
+	echo "No install"
+
 clean:
 	rm -f *.o *.d
 
 -include $(DEPFILES)
+
+.PHONY: install clean run

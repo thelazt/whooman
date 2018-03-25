@@ -13,7 +13,8 @@ protected:
 	void defaultPlayer(Playground& ground, unsigned short players);
 	void defaultItems(Playground& ground);
 
-public: 
+public:
+	virtual ~Layout(){};
 	virtual void setup(Playground& ground, unsigned short players);
 };
 

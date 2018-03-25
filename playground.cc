@@ -5,14 +5,15 @@
 #include "player.h"
 #include "screen.h"
 
-bool Playground::create(Arena& _arena, Layout& layout, unsigned short _players){
+bool Playground::create(Arena * _arena, Layout& layout, unsigned short _players){
 	if ( _players < 2)
 		return false;
 	else {
-		arena = &_arena;
-		layout.setup(*this, _players);
-		_arena.create();
+		state = GAME_ACTIVE;
 		players = _players;
+		arena = _arena;
+		layout.setup(*this, _players);
+		arena->create();
 		for (unsigned short y = 0; y < playground.height; y++)
 			for (unsigned short x = 0; x < playground.width; x++)
 				dangerzone[y][x] = 0;
@@ -202,7 +203,7 @@ bool Playground::accessible(unsigned short x, unsigned short y, enum PlaygroundA
 	}
 }
 
-enum GameState Playground::check(){
+enum Playground::GameState Playground::check(){
 	if (state == GAME_ACTIVE){
 		int survivors = 0;
 		int last = -1;
@@ -222,7 +223,7 @@ enum GameState Playground::check(){
 	return state;
 }
 
-enum GameState Playground::tick(){
+enum Playground::GameState Playground::tick(){
 	bool status = false;
 	bool hasExplodingBomb = false;
 	for (unsigned short y = 0; y < playground.height; y++)
@@ -251,7 +252,7 @@ enum GameState Playground::tick(){
 				}
 			}
 
-	if (hasExplodingBomb)
+	if (state == GAME_ACTIVE && hasExplodingBomb)
 		for (unsigned short y = 0; y < playground.height; y++)
 			for (unsigned short x = 0; x < playground.width; x++){
 				cell &c = field[y][x];
@@ -265,6 +266,10 @@ enum GameState Playground::tick(){
 
 	if (status)
 		arena->update();
+
+	for (int p = 0; p < players; p++){
+		player[p].tick();
+	}
 
 	draw(true);
 
@@ -285,14 +290,6 @@ void Playground::draw(bool tick){
 
 }
 
-void Playground::dump(){
-	for (unsigned short y = 0; y < playground.height; y++){
-		for (unsigned short x = 0; x < playground.width; x++)
-			std::printf("%08X ", (field[y][x].value));
-		std::printf("\n");
-	}
-	std::printf("\n");
-}
 
 Playground playground;
 

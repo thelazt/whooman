@@ -36,7 +36,7 @@ void Layout::defaultLayout(Playground& ground){
 
 void Layout::defaultPlayer(Playground& ground, unsigned short players){
 	for (int p = 0; p < players; p++)
-		player[p].reset(p < 2 ? 1 : (ground.getWidth() - 2), p % 2 ? 1 : (ground.getHeight() - 2));
+		player[p].init(p < 2 ? 1 : (ground.getWidth() - 2), p % 2 ? 1 : (ground.getHeight() - 2));
 }
 
 void Layout::defaultItems(Playground& ground){
