@@ -17,8 +17,7 @@
 
 using namespace std;
 
-
-ArenaTest arena_default(100,10);
+ArenaFactory arena_default(100,48);
 Layout layout_default;
 
 SDL_Event event;
@@ -31,7 +30,7 @@ int number(){
 
 int main(){
 	srand(time(NULL));
-
+	//playground.dim(10,10);
 	SDL_EnableKeyRepeat(100, SDL_DEFAULT_REPEAT_INTERVAL);
 
 	player[0].load("img/skin_diver.png");

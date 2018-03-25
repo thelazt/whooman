@@ -9,12 +9,12 @@ class Arena;
 
 class Arena {
 protected:
-	Sprite ground, bomb, fire, item;
+	Sprite ground, bomb, fire, item, stats;
 
 	const unsigned short blockAni;
 	unsigned short fireSprite(unsigned short x, unsigned short y);
 
-	Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize, const char * groundSprite, const unsigned short blockAni = 1, const char * bombSprite = "img/default_bomb.png", const char * fireSprite = "img/default_fire.png", const char * itemsSprite="img/default_items.png");
+	Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize, const char * groundSprite, const unsigned short blockAni = 1, const char * bombSprite = "img/default_bomb.png", const char * fireSprite = "img/default_fire.png", const char * itemsSprite="img/default_items.png", const char * statsSprite="img/default_stats.png");
 
 
 public:

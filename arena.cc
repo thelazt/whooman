@@ -3,17 +3,18 @@
 #include <cassert>
 #include <iostream>
 
-Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize, const char * groundSprite, const unsigned short blockAni, const char * bombSprite, const char * fireSprite, const char * itemSprite) : 
+Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize, const char * groundSprite, const unsigned short blockAni, const char * bombSprite, const char * fireSprite, const char * itemSprite, const char * statsSprite) :
 	ground(groundSprite, _tileSize, _tileSize),
 	bomb(bombSprite, _tileSize, _tileSize),
 	fire(fireSprite, _tileSize, _tileSize),
 	item(itemSprite, _tileSize, _tileSize),
+	stats(statsSprite, _tileSize / 2, _tileSize),
 	blockAni(blockAni),
 	offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {};
 
 void Arena::draw(bool tick){
-	for (unsigned short y = 0; y < playground.height; y++)
-		for (unsigned short x = 0; x < playground.width; x++){
+	for (unsigned short y = 0; y < playground.getHeight(); y++)
+		for (unsigned short x = 0; x < playground.getWidth(); x++){
 			cell &c = playground.get(x, y);
 			unsigned short _x = x * tileSize + offsetX;
 			unsigned short _y = y * tileSize + offsetY;
@@ -37,10 +38,10 @@ void Arena::draw(bool tick){
 					item.draw((c.tick % 2) * 5 + c.extra - 1, _x, _y);
 					break;
 				case CELL_BOMB:
-					bomb.draw((c.tick % 4) == 3 ? 1 : (c.tick % 4), _x, _y);
+					bomb.draw(((c.tick % 4) == 3 ? 1 : (c.tick % 4)) + (c.tick <= 3 ? 3 : 0), _x, _y);
 					break;
 				case CELL_FIRE:
-					fire.draw(((c.tick % 9) > 4 ? (6 - (c.tick % 7)) : c.tick) * 7 + c.sprite , _x, _y);
+					fire.draw(((c.tick % 9) > 4 ? (8 - (c.tick % 9)) : c.tick) * 7 + c.sprite , _x, _y);
 					break;
 				default: 
 					break;
@@ -82,8 +83,8 @@ unsigned short Arena::fireSprite(unsigned short x, unsigned short y){
 }
 
 void Arena::update(){
-	for (unsigned short y = 1; y < playground.height - 1; y++)
-		for (unsigned short x = 1; x < playground.width - 1; x++){
+	for (unsigned short y = 1; y < playground.getHeight() - 1; y++)
+		for (unsigned short x = 1; x < playground.getWidth() - 1; x++){
 			cell &c = playground.get(x, y);
 			switch (c.type){
 				case CELL_WALL:
@@ -114,32 +115,36 @@ void Arena::update(){
 }
 
 unsigned short Arena::decorate(short x, short y){
-	if (x >= 0 && x < playground.width && y <= playground.height)
-		return y < playground.height ? 3 : 1;
+	if (x >= 0 && x < playground.getWidth() && y <= playground.getHeight())
+		return y < playground.getHeight() ? 3 : 1;
 	else
 		return 0;
 }
 
 
 void Arena::create(){
+	// statusbar
+	for (short x = 0; x<  (short)(screen.width + tileSize / 2); x += tileSize / 2){
+		stats.draw(4, x, offsetY - tileSize);
+	}
 	// outside
 	for (short y = 0; offsetY + y * tileSize < (short)(screen.height + tileSize); y++){
 		for (short x = -1; offsetX + x * tileSize > -((short)tileSize); x--)
 			ground.draw(decorate(x,y), offsetX + x * tileSize, offsetY + y * tileSize);
-		if (y >= playground.height)
-			for (short x = 0; x < playground.width; x++)
+		if (y >= playground.getHeight())
+			for (short x = 0; x < playground.getWidth(); x++)
 				ground.draw(decorate(x,y), offsetX + x * tileSize, offsetY + y * tileSize);
-		for (short x = playground.width; offsetX + x * tileSize < (short)(screen.width + tileSize); x++)
+		for (short x = playground.getWidth(); offsetX + x * tileSize < (short)(screen.width + tileSize); x++)
 			ground.draw(decorate(x,y), offsetX + x * tileSize, offsetY + y * tileSize);
 	}
 	// Border
-	for (unsigned short y = 0; y < playground.height; y++){
+	for (unsigned short y = 0; y < playground.getHeight(); y++){
 		playground.get(0, y).surface = decorate(0, y);
-		playground.get(playground.width - 1, y).surface = decorate(playground.width - 1, y);
+		playground.get(playground.getWidth() - 1, y).surface = decorate(playground.getWidth() - 1, y);
 	}
-	for (unsigned short x = 0; x < playground.width; x++){
+	for (unsigned short x = 0; x < playground.getWidth(); x++){
 		playground.get(x, 0).surface = decorate(x, 0);
-		playground.get(x, playground.height - 1).surface = decorate(x, playground.height - 1);
+		playground.get(x, playground.getHeight() - 1).surface = decorate(x, playground.getHeight() - 1);
 	}
 	// Foreground
 	update();

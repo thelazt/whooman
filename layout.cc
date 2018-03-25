@@ -15,18 +15,18 @@ struct {
 
 
 void Layout::defaultLayout(Playground& ground){
-	for (unsigned short y = 0; y < ground.height; y++)
-		for (unsigned short x = 0; x < ground.width; x++){
+	for (unsigned short y = 0; y < ground.getHeight(); y++)
+		for (unsigned short x = 0; x < ground.getWidth(); x++){
 			cell& c = ground.get(x,y);
 			c.value = 0;
 			// Outer Walls
-			if (y == 0 || x == 0 || y == ground.height-1 || x == ground.width - 1)
+			if (y == 0 || x == 0 || y == ground.getHeight()-1 || x == ground.getWidth() - 1)
 				c.type = CELL_WALL;
 			// Inner Walls
 			else if (y % 2  == 0 && x % 2 == 0 )
 				c.type = CELL_WALL;
 			// Blocks
-			else if ((x > 2 && x <ground. width - 3) || (y > 2 && y < ground.height - 3))
+			else if ((x > 2 && x < ground.getWidth() - 3) || (y > 2 && y < ground.getHeight() - 3))
 				c.type = CELL_BLOCK;
 			// Grass
 			else 
@@ -36,7 +36,7 @@ void Layout::defaultLayout(Playground& ground){
 
 void Layout::defaultPlayer(Playground& ground, unsigned short players){
 	for (int p = 0; p < players; p++)
-		player[p].reset(p < 2 ? 1 : (ground.width - 2), p % 2 ? 1 : (ground.height - 2));
+		player[p].reset(p < 2 ? 1 : (ground.getWidth() - 2), p % 2 ? 1 : (ground.getHeight() - 2));
 }
 
 void Layout::defaultItems(Playground& ground){
@@ -44,10 +44,10 @@ void Layout::defaultItems(Playground& ground){
 		unsigned short x, y; 
 	};
 	// Save all CELL_BLOCK
-	struct xy block[ground.height * ground.width];
+	struct xy block[ground.getHeight() * ground.getWidth()];
 	unsigned short blocks = 0;
-	for (unsigned short y = 0; y < ground.height; y++)
-		for (unsigned short x = 0; x < ground.width; x++)
+	for (unsigned short y = 0; y < ground.getHeight(); y++)
+		for (unsigned short x = 0; x < ground.getWidth(); x++)
 			if (ground.get(x,y).type == CELL_BLOCK)
 				block[blocks++] = { x, y };
 	// Shuffle

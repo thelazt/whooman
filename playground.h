@@ -11,7 +11,7 @@ class Playground {
 
 private:
 	static const unsigned short maxWidth = 21;
-	static const unsigned short maxHeight = 16;
+	static const unsigned short maxHeight = 15;
 
 	cell field[maxHeight][maxWidth];
 	unsigned char dangerzone[maxHeight][maxWidth];
@@ -20,6 +20,8 @@ private:
 
 	Arena * arena;
 	unsigned short players;
+	unsigned short width;
+	unsigned short height;
 
 	void killall(unsigned short x, unsigned short y, unsigned short _player);
 	bool fire(unsigned short x, unsigned short y, unsigned short _player);
@@ -30,10 +32,23 @@ private:
 
 public:
 	enum PlaygroundAccess { ACCESS_DEADLY, ACCESS_DANGEROUS, ACCESS_SAFE };
-	const unsigned short width;
-	const unsigned short height;
 
-	Playground(unsigned short _width = 15, unsigned short _height = 13) :  state(GAME_ACTIVE), width(_width > maxWidth ? maxWidth : _width), height(_height > maxHeight ? maxHeight : _height) {
+
+	Playground() :  state(GAME_ACTIVE) {
+		dim();
+	}
+
+	unsigned short getWidth(){
+		return width;
+	}
+
+	unsigned short getHeight(){
+		return height;
+	}
+
+	void dim(unsigned short _width = 15, unsigned short _height = 13){
+		width = _width > maxWidth ? maxWidth : _width;
+		height = _height > maxHeight ? maxHeight : _height;
 	}
 
 	unsigned short playerCount(){

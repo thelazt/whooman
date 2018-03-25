@@ -11,7 +11,7 @@ enum ItemType { ITEM_BOMB = 1, ITEM_SPEED = 2, ITEM_POWER = 3, ITEM_ULTRA = 4, I
 
 const unsigned short TICK_FIRE = 8;
 const unsigned short TICK_BLOCKONFIRE = 7;
-const unsigned short TICK_BOMB = 16;
+const unsigned short TICK_BOMB = 23;
 
 const unsigned CELL_ACCESSIBLE = 0x80;
 const unsigned CELL_ONFIRE = 0x40;
