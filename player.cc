@@ -28,7 +28,8 @@ void Player::init(unsigned short _x, unsigned short _y, unsigned short _tileSize
 	power = 2;
 	bombs = 1;
 	speed = 1;
-	sickness = 0;
+	sickness = SICK_NONE;
+	sicknessCounter = 0;
 	ani = 1;
 }
 
@@ -129,7 +130,7 @@ void Player::move(enum PlayerDir _dir){
 		}
 
 		short dirY = 0, dirX = 0;
-		unsigned short s = (32 + speed);
+		unsigned short s = sickness == SICK_SLOW ? 10 : (32 + speed);
 		switch(dir) {
 			case MOVE_UP: dirY = -s; break;
 			case MOVE_DOWN: dirY = s; break;
@@ -156,9 +157,26 @@ void Player::move(enum PlayerDir _dir){
 
 bool Player::bomb(){
 	if (alive && bombs > 0){
+		unsigned short time = TICK_BOMB;
+		unsigned short _power = power;
+		switch (sickness){
+			case SICK_NOBOMB:
+				return false;
+			case SICK_NOPOWER:
+				_power = 1;
+				break;
+			case SICK_FUZELONG:
+				time *= 2;
+				break;
+			case SICK_FUZESHORT:
+				time /= 2;
+				break;
+			default:
+				break;
+		}
 		unsigned short fx, fy;
 		getPos(fx, fy);
-		if (playground.bomb(fx, fy, id, power, TICK_BOMB)){
+		if (playground.bomb(fx, fy, id, _power, time)){
 			bombs--;
 			return true;
 		}
@@ -174,14 +192,17 @@ unsigned int Player::getPoints(){
 	return points;
 }
 
-void Player::item(enum ItemType _item){
+void Player::item(enum Item::ItemType _item){
 	switch(_item){
-		case ITEM_BOMB:  bombs++; break;
-		case ITEM_SPEED: speed++; break;
-		case ITEM_POWER: power++; break;
-		case ITEM_ULTRA: power+=10; break;
-		case ITEM_SICK:
-			sickness = 5; // TODO
+		case Item::ITEM_BOMB:  bombs++; break;
+		case Item::ITEM_SPEED: speed++; break;
+		case Item::ITEM_POWER: power++; break;
+		case Item::ITEM_ULTRA: power+=10; break;
+		case Item::ITEM_SICK:
+			sicknessTimer = TICK_SICKNESS;
+			sickness = (enum PlayerSickness) (number() % 7 + 1);
+			break;
+		default:
 			break;
 	}
 }
@@ -205,6 +226,22 @@ void Player::win(){
 void Player::tick(){
 	if (alive)
 		points++;
+	if (sickness != SICK_NONE){
+		if (--sicknessTimer == 0)
+			sickness = SICK_NONE;
+		else {
+			if (sickness == SICK_DROPBOMB)
+				bomb();
+			// infect other players
+			unsigned short x, y;
+			getPos(x, y);
+			for (int p = 0; p < playground.playerCount(); p++)
+				if (p != id && player[p].sickness == SICK_NONE && player[p].atPos(x,y)){
+					player[p].sickness = sickness;
+					player[p].sicknessTimer = min<unsigned short>(TICK_SICKNESS, sicknessTimer * 2);
+				}
+		}
+	}
 }
 
 void Player::draw(bool tick){
@@ -226,7 +263,7 @@ void Player::draw(bool tick){
 		ani %= 4;
 		num = dir * 3 + (ani == 3 ? 1 : ani);
 	}
-	if (num >= 0)
+	if (num >= 0 && (sickness == 0 || (sickness != SICK_INVISIBLE && (sicknessCounter++) % 2 == 0)))
 		skin.draw(num, (x >> factor) + offsetXabs, (y >> factor) + offsetYabs);
 }
 

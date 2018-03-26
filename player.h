@@ -5,10 +5,13 @@ class Player;
 #include "def.h"
 #include "sprite.h"
 #include "playground.h"
+#include "item.h"
 
 class Player {
 public:
 	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_BOMB = 4, MOVE_AUTO = 0xf, MOVE_HEAVEN = 0xf0, MOVE_WON = 0xf1, MOVE_WAIT = 0xff};
+
+	enum PlayerSickness { SICK_NONE, SICK_NOBOMB, SICK_NOPOWER, SICK_SLOW, SICK_INVISIBLE, SICK_FUZELONG, SICK_FUZESHORT, SICK_DROPBOMB };
 
 	enum PlayerPoints {
 		POINT_SURVIVE       = 100000,
@@ -37,7 +40,9 @@ private:
 	unsigned short power;
 	unsigned short bombs;
 	unsigned short speed;
-	unsigned short sickness;
+	enum PlayerSickness sickness;
+	unsigned short sicknessTimer;
+	unsigned short sicknessCounter;
 	unsigned int points;
 	
 	bool alive;
@@ -86,7 +91,7 @@ public:
 		return alive;
 	}
 
-	void item(enum ItemType _item);
+	void item(enum Item::ItemType _item);
 
 	void tick();
 

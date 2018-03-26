@@ -6,6 +6,7 @@
 #include "arenas.h"
 #include "player.h"
 #include "screen.h"
+#include "layouts.h"
 
 SDL_Event event;
 
@@ -58,8 +59,8 @@ Arena * Game::newArena(enum ArenaName arena, unsigned short _offsetX, unsigned s
 
 Layout * Game::newLayout(enum LayoutName layout) const {
 	switch(layout){
-//		case ARENA_ATOMIC:
-//			return new ArenaAtomic(_offsetX, _offsetY, _tileSize);
+		case LAYOUT_EMPTY:
+			return new LayoutEmpty();
 		case LAYOUT_RANDOM:
 			return newLayout((enum LayoutName) (number() % LAYOUT_RANDOM));
 		default:
@@ -67,12 +68,12 @@ Layout * Game::newLayout(enum LayoutName layout) const {
 	}
 }
 
-enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _arena, enum LayoutName _layout, unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize){
+enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _arena, enum LayoutName _layout, enum Item::ItemSet itemset, unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize){
 	enum Playground::GameState state = Playground::GAME_ACTIVE;
 	// Initialize Playground
 	Arena * arena = newArena(_arena, _offsetX, _offsetY, _tileSize);
 	Layout * layout = newLayout(_layout);
-	if (!playground.create(arena, *layout, _player))
+	if (!playground.create(arena, *layout, itemset, _player))
 		state = Playground::GAME_ERROR;
 	else {
 		// Initialize Player
@@ -81,7 +82,6 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 				move[p] = player[p].keys[Player::MOVE_BOMB] == 0 ? Player::MOVE_AUTO : Player::MOVE_WAIT;
 		// Game loop
 		unsigned short i = 0;
-		unsigned short c = 500;
 		while(state == Playground::GAME_ACTIVE) {
 			// Get movements
 			if (!input(move))
@@ -117,7 +117,7 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 	return state;
 }
 
-bool Game::play(unsigned short _player, unsigned short rounds, unsigned short width, unsigned short height, enum ArenaName arena, enum LayoutName layout){
+bool Game::play(unsigned short _player, unsigned short rounds, unsigned short width, unsigned short height, enum ArenaName arena, enum LayoutName layout, enum Item::ItemSet itemset){
 	// Adjust rounds
 	if (rounds < 1)
 		rounds = 1;
@@ -135,7 +135,7 @@ bool Game::play(unsigned short _player, unsigned short rounds, unsigned short wi
 
 	// Start rounds
 	for (unsigned short r = 1; r <= rounds; r++)
-		switch(round(_player, ARENA_RANDOM, layout, offsetX, offsetY, defaultTileSize)){
+		switch(round(_player, arena, layout, itemset, offsetX, offsetY, defaultTileSize)){
 			case Playground::GAME_DRAW:
 				r--;
 				break;

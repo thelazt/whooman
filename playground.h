@@ -4,6 +4,7 @@
 class Playground;
 
 #include "def.h"
+#include "item.h"
 #include "arena.h"
 #include "layout.h"
 
@@ -66,7 +67,7 @@ public:
 		return *arena;
 	}
 
-	bool create(Arena * _arena, Layout& layout, unsigned short _players = 4);
+	bool create(Arena * _arena, Layout& layout, enum Item::ItemSet itemset, unsigned short _players = 4);
 
 	bool bomb(unsigned short x, unsigned short y, unsigned short _player, unsigned short power, unsigned short ticks);
 

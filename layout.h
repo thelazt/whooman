@@ -9,13 +9,12 @@ class Layout;
 class Layout {
 
 protected:
-	void defaultLayout(Playground& ground);
-	void defaultPlayer(Playground& ground, unsigned short players);
-	void defaultItems(Playground& ground);
+	void defaultLayout();
+	void defaultPlayer(unsigned short players);
 
 public:
 	virtual ~Layout(){};
-	virtual void setup(Playground& ground, unsigned short players);
+	virtual void setup(unsigned short players);
 };
 
 #endif

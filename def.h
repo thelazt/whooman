@@ -7,13 +7,12 @@ const unsigned defaultStatsHeight = 36;
 
 const unsigned maxPlayer = 4;
 
-enum ItemType { ITEM_BOMB = 1, ITEM_SPEED = 2, ITEM_POWER = 3, ITEM_ULTRA = 4, ITEM_SICK = 5};
-
 const unsigned short SUBTICK_US = 16000;
 const unsigned short SUBTICKS = 3;
 const unsigned short TICK_FIRE = 8;
 const unsigned short TICK_BLOCKONFIRE = 7;
 const unsigned short TICK_BOMB = 23;
+const unsigned short TICK_SICKNESS = 99;
 
 const unsigned CELL_ACCESSIBLE = 0x80;
 const unsigned CELL_ONFIRE = 0x40;

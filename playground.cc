@@ -4,15 +4,17 @@
 #include "playground.h"
 #include "player.h"
 #include "screen.h"
+#include "item.h"
 
-bool Playground::create(Arena * _arena, Layout& layout, unsigned short _players){
+bool Playground::create(Arena * _arena, Layout& layout, enum Item::ItemSet itemset, unsigned short _players){
 	if ( _players < 2)
 		return false;
 	else {
 		state = GAME_ACTIVE;
 		players = _players;
 		arena = _arena;
-		layout.setup(*this, _players);
+		layout.setup(_players);
+		Item::distribute(itemset);
 		arena->create();
 		for (unsigned short y = 0; y < playground.height; y++)
 			for (unsigned short x = 0; x < playground.width; x++)
@@ -40,7 +42,7 @@ void Playground::access(unsigned short x, unsigned short y, unsigned short _play
 		case CELL_GRASS:
 			break;
 		case CELL_ITEM:
-			player[_player].item((enum ItemType) c.extra);
+			player[_player].item((enum Item::ItemType) c.extra);
 			c.value = 0;
 			c.type = CELL_GRASS;
 			arena->update();
@@ -96,7 +98,7 @@ bool Playground::fire(unsigned short x, unsigned short y, unsigned short _player
 void Playground::explode(unsigned short x, unsigned short y, unsigned short _player){
 	cell &c = field[y][x];
 	assert(c.type == CELL_BOMB);
-	player[(int)c.player].item(ITEM_BOMB);
+	player[(int)c.player].item(Item::ITEM_BOMB);
 	player[(int)c.player].wait = false;
 	player[(int)c.player].cover = false;
 	unsigned short power = c.extra;
@@ -289,7 +291,6 @@ void Playground::draw(bool tick){
 	screen.flip();
 
 }
-
 
 Playground playground;
 
