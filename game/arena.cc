@@ -127,7 +127,7 @@ unsigned short Arena::decorate(short x, short y) {
 
 void Arena::statusbar(short p, bool init) {
 	static bool alive[maxPlayer];
-	short screenPart = screen.width / playground.playerCount();
+	short screenPart = Screen::getWidth() / playground.playerCount();
 	short start = screenPart * p;
 	short y = offsetY - defaultStatsHeight;
 	if (init || alive[p] != player[p].isAlive()) {
@@ -150,14 +150,14 @@ void Arena::create() {
 	for (short p = 0; p < 4 ; p++)
 		statusbar(p, true);
 	// outside
-	for (short y = 0; offsetY + y * tileSize < (short)(screen.height + tileSize); y++) {
+	for (short y = 0; offsetY + y * tileSize < (short)(Screen::getHeight() + tileSize); y++) {
 		for (short x = -1; offsetX + x * tileSize > -((short)tileSize); x--)
 			ground.draw(decorate(x, y), offsetX + x * tileSize, offsetY + y * tileSize);
 		if (y >= playground.getHeight()) {
 			for (short x = 0; x < playground.getWidth(); x++)
 				ground.draw(decorate(x, y), offsetX + x * tileSize, offsetY + y * tileSize);
 		}
-		for (short x = playground.getWidth(); offsetX + x * tileSize < (short)(screen.width + tileSize); x++)
+		for (short x = playground.getWidth(); offsetX + x * tileSize < (short)(Screen::getWidth() + tileSize); x++)
 			ground.draw(decorate(x, y), offsetX + x * tileSize, offsetY + y * tileSize);
 	}
 	// Border

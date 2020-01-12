@@ -127,7 +127,7 @@ bool Game::play(unsigned short _player, unsigned short rounds, unsigned short wi
 	playground.dim(width, height);
 	// Calculate offsets
 	const unsigned short offsetY = defaultStatsHeight;
-	const unsigned short offsetX = (screen.width - (width * defaultTileSize)) / 2;
+	const unsigned short offsetX = (Screen::getWidth() - (width * defaultTileSize)) / 2;
 
 	// Start rounds
 	for (unsigned short r = 1; r <= rounds; r++)

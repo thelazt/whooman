@@ -282,15 +282,15 @@ enum Playground::GameState Playground::tick() {
 }
 
 void Playground::draw(bool tick) {
-	screen.lock();
+	Screen::lock();
 
 	arena->draw(tick);
 
 	for (int p = 0; p < players; p++)
 		player[p].draw(tick);
 
-	screen.unlock();
-	screen.flip();
+	Screen::unlock();
+	Screen::flip();
 
 }
 

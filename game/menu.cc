@@ -42,15 +42,15 @@ void Menu::stats() {
 	bool ani = false;
 	while (Input::update()) {
 		ani = !ani;
-		screen.lock();
+		Screen::lock();
 		background.draw(0, 0, 0);
 		podium.draw(0, wleft, 400);
 		player[0].skin.draw(1, wleft + 8, 390);
 		player[2].skin.draw(12, wleft + 118, 400);
 		podium.draw(1, wleft, 400);
 		player[1].skin.draw(ani ? 15 : 16, wleft + 62, 360);
-		screen.unlock();
-		screen.flip();
+		Screen::unlock();
+		Screen::flip();
 		usleep(300000);
 	}
 }
@@ -61,7 +61,7 @@ void Menu::show() {
 	Sprite playground("img/menu_playgrounds.png", 96, 59);
 
 	while (Input::update()) {
-		screen.lock();
+		Screen::lock();
 		background.draw(0, 0, 0);
 		const unsigned short labelTop = 300;
 		for (unsigned short p = 0; p < maxPlayer; p++) {
@@ -69,8 +69,8 @@ void Menu::show() {
 			player[p].skin.draw(1, 112 + p * 200, labelTop + 40);
 			control.draw(p+2, 146 + p * 200,  labelTop + 40);
 		}
-		screen.unlock();
-		screen.flip();
+		Screen::unlock();
+		Screen::flip();
 		wait(20);
 	}
 

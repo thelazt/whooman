@@ -11,9 +11,8 @@
 #include "game.h"
 #include "menu.h"
 
-Screen screen(1024, 768);
-
 int main() {
+	Screen::init(1024, 768);
 	srand(time(NULL));
 
 	player[0].input = Input::KEYBOARD_ARROW;
@@ -29,5 +28,7 @@ int main() {
 	menu.show();
 	return 0;
 */
-	return game.play(4, 4) ? 0 : 1;
+	game.play(4, 4);
+	Screen::deinit();
+	return 0;
 }
