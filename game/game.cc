@@ -82,6 +82,8 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 			if (!input(move)) {
 				state = Playground::GAME_ABORT;
 			} else {
+				Guarded_Bell bell;
+				bell.set(1);
 				// Move Player
 				for (unsigned short p = 0; p < _player; p++)
 					player[p].move(move[p]);
@@ -93,16 +95,18 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 				// Draw
 				playground.draw();
 				// Wait.
-				wait(1);
+				bell.sleep();
 			}
 		}
 		if (state == Playground::GAME_WON || state == Playground::GAME_DRAW) {
 			for (unsigned short x = 0; x < 60; x++) {
+				Guarded_Bell bell;
+				bell.set(SUBTICKS);
 				playground.tick();
 				// Draw
 				playground.draw();
 				// Wait.
-				wait(SUBTICKS);
+				bell.sleep();
 			}
 		}
 	}

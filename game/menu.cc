@@ -51,7 +51,7 @@ void Menu::stats() {
 		player[1].skin.draw(ani ? 15 : 16, wleft + 62, 360);
 		Screen::unlock();
 		Screen::flip();
-		usleep(300000);
+		Guarded_Bell::sleep(300);
 	}
 }
 
@@ -71,7 +71,7 @@ void Menu::show() {
 		}
 		Screen::unlock();
 		Screen::flip();
-		wait(20);
+		Guarded_Bell::sleep(1);
 	}
 
 }
