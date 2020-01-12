@@ -59,9 +59,9 @@ Arena * Game::newArena(enum ArenaName arena, unsigned short _offsetX, unsigned s
 
 Layout * Game::newLayout(enum LayoutName layout) const {
 	switch(layout){
-		case LAYOUT_EMPTY:
+/*		case LAYOUT_EMPTY:
 			return new LayoutEmpty();
-		case LAYOUT_RANDOM:
+*/		case LAYOUT_RANDOM:
 			return newLayout((enum LayoutName) (number() % LAYOUT_RANDOM));
 		default:
 			return new Layout();
