@@ -7,23 +7,22 @@ Screen::Screen(unsigned int _width, unsigned int _height, const char * title) : 
 	SDL_FillRect(content, NULL, SDL_MapRGB(content->format, 0, 0, 0));
 }
 
-void Screen::lock(){
+void Screen::lock() {
 	if (SDL_MUSTLOCK(content)) {
 		SDL_LockSurface(content);
 	}
 }
 
-void Screen::unlock(){
+void Screen::unlock() {
 	if (SDL_MUSTLOCK(content)) {
 		SDL_UnlockSurface(content);
 	}
 }
 
-void Screen::flip(){
+void Screen::flip() {
 	SDL_Flip(content);
 }
 
-Screen::~Screen(){
+Screen::~Screen() {
 	SDL_Quit();
 }
-

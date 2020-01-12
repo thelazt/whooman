@@ -4,9 +4,9 @@ CXX := g++
 LINKER := g++
 INCDIRS := -I.
 LIBS := -lSDL -lSDL_image
-CXXFLAGS := -std=c++11 -Wall -Wextra -Og -g3 -ggdb
+CXXFLAGS := -std=c++14 -Wall -Wextra -Og -g3 -ggdb
 
-SRCFILES := $(wildcard *.cc) 
+SRCFILES := $(wildcard *.cc)
 OBJFILES := $(patsubst %.cc,%.o,$(SRCFILES))
 DEPFILES := $(patsubst %.cc,%.d,$(SRCFILES))
 

@@ -1,10 +1,9 @@
-#ifndef _BOMB_SCREEN_H
-#define _BOMB_SCREEN_H
+#pragma once
 
 #include "SDL/SDL.h"
 
 class Screen {
-public:
+ public:
 	const unsigned int width;
 	const unsigned int height;
 	SDL_Surface *content;
@@ -21,5 +20,3 @@ public:
 };
 
 extern Screen screen;
-
-#endif

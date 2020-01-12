@@ -1,5 +1,4 @@
-#ifndef _BOMB_DEF_H
-#define _BOMB_DEF_H
+#pragma once
 
 const unsigned defaultTileSize = 48;
 const unsigned defaultStatsWidth = 16;
@@ -53,4 +52,3 @@ template <class T> const T& min (const T& a, const T& b) {
 }
 
 extern int number();
-#endif

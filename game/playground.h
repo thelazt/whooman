@@ -1,5 +1,4 @@
-#ifndef _BOMB_PLAYGROUND_H
-#define _BOMB_PLAYGROUND_H
+#pragma once
 
 class Playground;
 
@@ -9,11 +8,11 @@ class Playground;
 #include "layout.h"
 
 class Playground {
-public:
+ public:
 	enum GameState { GAME_ACTIVE, GAME_DRAW, GAME_WON, GAME_ABORT, GAME_ERROR };
 	enum PlaygroundAccess { ACCESS_DEADLY, ACCESS_DANGEROUS, ACCESS_SAFE };
 
-private:
+ private:
 	static const unsigned short maxWidth = 21;
 	static const unsigned short maxHeight = 15;
 
@@ -34,36 +33,36 @@ private:
 	void dangerous(unsigned short x, unsigned short y, unsigned short power);
 	void reevaluate();
 
-public:
+ public:
 
 	Playground() : state(GAME_ACTIVE) {
 		dim();
 	}
 
-	unsigned short getWidth(){
+	unsigned short getWidth() {
 		return width;
 	}
 
-	unsigned short getHeight(){
+	unsigned short getHeight() {
 		return height;
 	}
 
-	void dim(unsigned short _width = 15, unsigned short _height = 13){
+	void dim(unsigned short _width = 15, unsigned short _height = 13) {
 		width = _width > maxWidth ? maxWidth : _width;
 		height = _height > maxHeight ? maxHeight : _height;
 	}
 
-	unsigned short playerCount(){
+	unsigned short playerCount() {
 		return players;
 	}
 
 	void access(unsigned short x, unsigned short y, unsigned short _player);
 
-	cell& get(unsigned short x, unsigned short y){
+	cell& get(unsigned short x, unsigned short y) {
 		return field[y][x];
 	}
 
-	Arena& getArena(){
+	Arena& getArena() {
 		return *arena;
 	}
 
@@ -83,5 +82,3 @@ public:
 };
 
 extern Playground playground;
-
-#endif

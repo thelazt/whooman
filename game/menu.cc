@@ -35,7 +35,7 @@ static const char * skins[] = {
 
 Menu::Menu() : background("img/menu_background.png", 1024, 768) {}
 
-bool Menu::input(){
+bool Menu::input() {
 	SDL_Event event;
 	while(SDL_PollEvent(&event)) {
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
@@ -58,19 +58,19 @@ bool Menu::input(){
 }
 
 
-void Menu::stats(){
+void Menu::stats() {
 	Sprite podium("img/menu_podium.png", 192, 122);
 
 	const unsigned short wleft = 416;
 	bool ani = false;
-	while (input()){
+	while (input()) {
 		ani = !ani;
 		screen.lock();
-		background.draw(0,0,0);
-		podium.draw(0, wleft,400);
+		background.draw(0, 0, 0);
+		podium.draw(0, wleft, 400);
 		player[0].skin.draw(1, wleft + 8, 390);
 		player[2].skin.draw(12, wleft + 118, 400);
-		podium.draw(1, wleft,400);
+		podium.draw(1, wleft, 400);
 		player[1].skin.draw(ani ? 15 : 16, wleft + 62, 360);
 		screen.unlock();
 		screen.flip();
@@ -78,16 +78,16 @@ void Menu::stats(){
 	}
 }
 
-void Menu::show(){
+void Menu::show() {
 	Sprite label("img/menu_label.png", 128, 25);
 	Sprite control("img/menu_control.png", 96, 72);
 	Sprite playground("img/menu_playgrounds.png", 96, 59);
 
-	while (input()){
+	while (input()) {
 		screen.lock();
-		background.draw(0,0,0);
+		background.draw(0, 0, 0);
 		const unsigned short labelTop = 300;
-		for (unsigned short p = 0; p < maxPlayer; p++){
+		for (unsigned short p = 0; p < maxPlayer; p++) {
 			label.draw(p, 112 + p * 200, labelTop);
 			player[p].skin.draw(1, 112 + p * 200, labelTop + 40);
 			control.draw(p+2, 146 + p * 200,  labelTop + 40);

@@ -1,5 +1,4 @@
-#ifndef BOMB_OBJ_H
-#define BOMB_OBJ_H
+#pragma once
 
 #define INVALID 0xffff
 const unsigned fieldPixel = 16;
@@ -7,11 +6,11 @@ const unsigned maxBombs = 16;
 
 
 class Field {
-public:
+ public:
 	static unsigned w, h;
 	unsigned x, y;
 	Field(unsigned _x, unsigned _y) : x(_x), y(_y) {
-		if (x >= w || y >= h){
+		if (x >= w || y >= h) {
 			x = INVALID;
 			y = INVALID;
 		}
@@ -23,17 +22,18 @@ public:
 };
 
 class Pos {
-public:
+ public:
 	unsigned x, y;
 	Pos(unsigned _x, unsigned _y) : x(_x), y(_y) {
-		if (x >= Field::w * fieldPixel || y >= Field::h * fieldPixel){
+		if (x >= Field::w * fieldPixel || y >= Field::h * fieldPixel) {
 			x = INVALID;
 			y = INVALID;
 		}
 	}
 	Pos() : x(INVALID), y(INVALID) {}
-	Field getField(){
-		return Field((x + (fieldPixel/2))/fieldPixel,(y + (fieldPixel/2))/fieldPixel); }
+	Field getField() {
+		return Field((x + (fieldPixel/2))/fieldPixel, (y + (fieldPixel/2))/fieldPixel);
+	}
 	bool valid(){
 		return x < Field::w*fieldPixel && y < Field::h*fieldPixel;
 	}
@@ -41,25 +41,26 @@ public:
 
 
 class Obj {
-protected:
+ protected:
 	Field field;
-public:
+
+ public:
 	bool explodable, massive;
 	Obj(Field _field, bool _explodable, bool _massive) : field(_field), explodable(_explodable), massive(_massive) {}
-	Obj( bool _explodable, bool _massive) : field(), explodable(_explodable), massive(_massive) {}
-	virtual Field getField() { return field; };
+	Obj(bool _explodable, bool _massive) : field(), explodable(_explodable), massive(_massive) {}
+	virtual Field getField() { return field; }
 	virtual void draw() = 0;
 };
 
 
 class Block : public Obj {
-public:
-	Block(Field field) : Obj(field, true, true) {}
+ public:
+	explicit Block(Field field) : Obj(field, true, true) {}
 };
 
 class Stone : public Obj {
-public:
-	Block(Field field) : Obj(field, false, true) {}
+ public:
+	explicit Block(Field field) : Obj(field, false, true) {}
 };
 
 
@@ -69,18 +70,18 @@ class Player: public Obj {
 	Pos pos;
 	bool kick, box;
 
-public:
+ public:
 	unsigned power;
-	Bomb bombs[maxBombs];
+	Bomb bombs[maxBombs]; //NOLINT
 
 	Player() : power(2), kick(false), box(false) {
-		for (unsigned i = 0; i < maxBombs; i++){
+		for (unsigned i = 0; i < maxBombs; i++) {
 			bombs[i].owner = this;
-			bombs.enabled = i==0;
+			bombs.enabled = i == 0;
 		}
 	}
 
-	getField() { 
+	getField() {
 		return pos.getField();
 	}
 
@@ -90,12 +91,13 @@ public:
 class Item : public Obj {
 	enum ItemType { POWER, BOMBS, KICK, BOX, SICKNESS };
 	enum ItemType type;
-public:
-	Item(enum ItemType _type) : Obj(true, false), type(_type) {}
+
+ public:
+	explicit Item(enum ItemType _type) : Obj(true, false), type(_type) {}
 };
 
 class Bomb: public Obj {
-public:
+ public:
 	Player *owner;
 	unsigned power;
 	unsigned timer;
@@ -105,5 +107,3 @@ public:
 		return power == 0;
 	}
 };
-
-#endif

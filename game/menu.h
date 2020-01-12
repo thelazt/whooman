@@ -1,5 +1,4 @@
-#ifndef _BOMB_MENU_H
-#define _BOMB_MENU_H
+#pragma once
 
 #include "def.h"
 #include "sprite.h"
@@ -8,10 +7,8 @@ class Menu {
 	Sprite background;
 	bool input();
 
-public:
+ public:
 	Menu();
 	void stats();
 	void show();
 };
-
-#endif

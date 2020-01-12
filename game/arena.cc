@@ -5,30 +5,32 @@
 #include <cassert>
 #include <iostream>
 
-Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize, const char * groundSprite, const unsigned short blockAni, const char * bombSprite, const char * fireSprite, const char * itemSprite, const char * statsSprite) :
-	ground(groundSprite, _tileSize, _tileSize),
-	bomb(bombSprite, _tileSize, _tileSize),
-	fire(fireSprite, _tileSize, _tileSize),
-	item(itemSprite, _tileSize, _tileSize),
-	stats(statsSprite, defaultStatsWidth, defaultStatsHeight),
-	blockAni(blockAni),
-	offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {};
+Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize, const char * groundSprite,
+             const unsigned short blockAni, const char * bombSprite, const char * fireSprite, const char * itemSprite,
+             const char * statsSprite)
+             : ground(groundSprite, _tileSize, _tileSize),
+               bomb(bombSprite, _tileSize, _tileSize),
+               fire(fireSprite, _tileSize, _tileSize),
+               item(itemSprite, _tileSize, _tileSize),
+               stats(statsSprite, defaultStatsWidth, defaultStatsHeight),
+               blockAni(blockAni),
+               offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {}
 
-void Arena::draw(bool tick){
+void Arena::draw(bool tick) {
 	// statusbar
 	for (short p = 0; p < 4 ; p++)
 		statusbar(p);
 	for (unsigned short y = 0; y < playground.getHeight(); y++)
-		for (unsigned short x = 0; x < playground.getWidth(); x++){
+		for (unsigned short x = 0; x < playground.getWidth(); x++) {
 			cell &c = playground.get(x, y);
 			unsigned short _x = x * tileSize + offsetX;
 			unsigned short _y = y * tileSize + offsetY;
 
 			ground.draw(c.surface + (c.type == CELL_BLOCK ? c.tick % blockAni : 0), _x, _y);
 
-			switch (c.type){
+			switch (c.type) {
 				case CELL_BLOCKONFIRE:
-					{
+					 {
 						unsigned short sprite = TICK_FIRE - c.tick;
 						if (sprite == 0)
 							sprite = 10;
@@ -37,7 +39,7 @@ void Arena::draw(bool tick){
 						else
 							sprite += 3;
 						ground.draw(sprite, _x, _y);
-					}
+					 }
 					break;
 				case CELL_ITEM:
 					item.draw((c.tick % 2) * 5 + c.extra - 1, _x, _y);
@@ -48,20 +50,20 @@ void Arena::draw(bool tick){
 				case CELL_FIRE:
 					fire.draw(((c.tick % 9) > 4 ? (8 - (c.tick % 9)) : c.tick) * 7 + c.sprite , _x, _y);
 					break;
-				default: 
+				default:
 					break;
 			}
 		}
 }
 
-unsigned short Arena::fireSprite(unsigned short x, unsigned short y){
+unsigned short Arena::fireSprite(unsigned short x, unsigned short y) {
 	bool up, down, left, right;
-	unsigned short count = 0; 
+	unsigned short count = 0;
 	count += (up = (playground.get(x, y - 1).type & CELL_ONFIRE)) ? 1 : 0;
 	count += (down = (playground.get(x, y + 1).type & CELL_ONFIRE)) ? 1 : 0;
 	count += (left = (playground.get(x - 1, y).type & CELL_ONFIRE)) ? 1 : 0;
 	count += (right = (playground.get(x + 1, y).type & CELL_ONFIRE)) ? 1 : 0;
-	switch (count){
+	switch (count) {
 		case 1:
 			if (down)
 				return 0;
@@ -87,11 +89,11 @@ unsigned short Arena::fireSprite(unsigned short x, unsigned short y){
 	}
 }
 
-void Arena::update(){
+void Arena::update() {
 	for (unsigned short y = 1; y < playground.getHeight() - 1; y++)
-		for (unsigned short x = 1; x < playground.getWidth() - 1; x++){
+		for (unsigned short x = 1; x < playground.getWidth() - 1; x++) {
 			cell &c = playground.get(x, y);
-			switch (c.type){
+			switch (c.type) {
 				case CELL_WALL:
 					c.surface = 3;
 					break;
@@ -101,11 +103,11 @@ void Arena::update(){
 				case CELL_FIRE:
 					c.sprite = fireSprite(x, y);
 				[[gnu::fallthrough]];
-				default: 
+				default:
 					if (y <= 0)
 						c.surface = 0;
 					else
-						switch (playground.get(x, y-1).type){
+						switch (playground.get(x, y-1).type) {
 							case CELL_WALL:
 								c.surface = 1;
 								break;
@@ -119,19 +121,19 @@ void Arena::update(){
 		}
 }
 
-unsigned short Arena::decorate(short x, short y){
+unsigned short Arena::decorate(short x, short y) {
 	if (x >= 0 && x < playground.getWidth() && y <= playground.getHeight())
 		return y < playground.getHeight() ? 3 : 1;
 	else
 		return 0;
 }
 
-void Arena::statusbar(short p, bool init){
+void Arena::statusbar(short p, bool init) {
 	static bool alive[maxPlayer];
 	short screenPart = screen.width / playground.playerCount();
 	short start = screenPart * p;
 	short y = offsetY - defaultStatsHeight;
-	if (init || alive[p] != player[p].isAlive()){
+	if (init || alive[p] != player[p].isAlive()) {
 		alive[p] = player[p].isAlive();
 		for (short x = 0; x < screenPart; x += defaultStatsWidth)
 			stats.draw(12, x + start, y);
@@ -140,36 +142,36 @@ void Arena::statusbar(short p, bool init){
 		player[p].skin.draw(alive[p] ? 0 : 13, start, y - 1, 0, 36);
 	}
 	unsigned int sum = player[p].getPoints();
-	for (short q = 10; q > 3 ; q--){
+	for (short q = 10; q > 3 ; q--) {
 		stats.draw(sum % 10, defaultStatsWidth * q + start, y);
 		sum /= 10;
 	}
 }
 
-void Arena::create(){
+void Arena::create() {
 	// statusbar
 	for (short p = 0; p < 4 ; p++)
 		statusbar(p, true);
 	// outside
-	for (short y = 0; offsetY + y * tileSize < (short)(screen.height + tileSize); y++){
+	for (short y = 0; offsetY + y * tileSize < (short)(screen.height + tileSize); y++) {
 		for (short x = -1; offsetX + x * tileSize > -((short)tileSize); x--)
-			ground.draw(decorate(x,y), offsetX + x * tileSize, offsetY + y * tileSize);
-		if (y >= playground.getHeight())
+			ground.draw(decorate(x, y), offsetX + x * tileSize, offsetY + y * tileSize);
+		if (y >= playground.getHeight()) {
 			for (short x = 0; x < playground.getWidth(); x++)
-				ground.draw(decorate(x,y), offsetX + x * tileSize, offsetY + y * tileSize);
+				ground.draw(decorate(x, y), offsetX + x * tileSize, offsetY + y * tileSize);
+		}
 		for (short x = playground.getWidth(); offsetX + x * tileSize < (short)(screen.width + tileSize); x++)
-			ground.draw(decorate(x,y), offsetX + x * tileSize, offsetY + y * tileSize);
+			ground.draw(decorate(x, y), offsetX + x * tileSize, offsetY + y * tileSize);
 	}
 	// Border
-	for (unsigned short y = 0; y < playground.getHeight(); y++){
+	for (unsigned short y = 0; y < playground.getHeight(); y++) {
 		playground.get(0, y).surface = decorate(0, y);
 		playground.get(playground.getWidth() - 1, y).surface = decorate(playground.getWidth() - 1, y);
 	}
-	for (unsigned short x = 0; x < playground.getWidth(); x++){
+	for (unsigned short x = 0; x < playground.getWidth(); x++) {
 		playground.get(x, 0).surface = decorate(x, 0);
 		playground.get(x, playground.getHeight() - 1).surface = decorate(x, playground.getHeight() - 1);
 	}
 	// Foreground
 	update();
 }
-

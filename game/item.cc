@@ -2,7 +2,7 @@
 #include "def.h"
 #include "playground.h"
 
-void Item::distribute(struct ItemProbability distribution){
+void Item::distribute(struct ItemProbability distribution) {
 	struct xy {
 		unsigned short x, y;
 	};
@@ -11,28 +11,29 @@ void Item::distribute(struct ItemProbability distribution){
 	unsigned short blocks = 0;
 	for (unsigned short y = 0; y < playground.getHeight(); y++)
 		for (unsigned short x = 0; x < playground.getWidth(); x++)
-			if (playground.get(x,y).type == CELL_BLOCK)
+			if (playground.get(x, y).type == CELL_BLOCK)
 				block[blocks++] = { x, y };
 	// Shuffle
-	for (unsigned short b = blocks - 1; b > 0; b--){
+	for (unsigned short b = blocks - 1; b > 0; b--) {
 		int i = number() % b;
 		cell &c = playground.get(block[i].x, block[i].y);
 		int j = number() % 100;
 		for(enum ItemType d = ITEM_BOMB; d <= ITEM_SICK; d = (enum ItemType) (d + 1))
-			if (j < distribution.item[d].probability){
-				if (distribution.item[d].limit > 0){
+			if (j < distribution.item[d].probability) {
+				if (distribution.item[d].limit > 0) {
 					c.extra = d;
 					distribution.item[d].limit--;
 				}
 				break;
-			} else
+			} else {
 				j -= distribution.item[d].probability;
+			}
 		block[i] = block[b];
 	}
 }
 
-struct Item::ItemProbability Item::getSet(enum Item::ItemSet name){
-	switch (name){
+struct Item::ItemProbability Item::getSet(enum Item::ItemSet name) {
+	switch (name) {
 		case SET_BASIC:
 			return (struct Item::ItemProbability) {{
 				{ 0, 0}, 		// ITEM_NONE (ignored)
@@ -41,7 +42,7 @@ struct Item::ItemProbability Item::getSet(enum Item::ItemSet name){
 				{ 10, 10 },		// ITEM_POWER
 				{ 0, 0 },		// ITEM_ULTRA
 				{ 0, 0 },		// ITEM_SICK
-			}};
+			}};  //NOLINT
 		case SET_RANDOM:
 			return getSet((enum ItemSet) (number() % SET_RANDOM));
 		default:
@@ -52,10 +53,10 @@ struct Item::ItemProbability Item::getSet(enum Item::ItemSet name){
 				{ 10, 10 },		// ITEM_POWER
 				{ 1, 2 },		// ITEM_ULTRA
 				{ 13, 13 },		// ITEM_SICK
-			}};
+			}};  //NOLINT
 	}
-};
+}
 
-void Item::distribute( enum ItemSet itemset){
+void Item::distribute(enum ItemSet itemset) {
 	distribute(getSet(itemset));
 }

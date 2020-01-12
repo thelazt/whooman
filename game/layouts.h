@@ -1,14 +1,13 @@
-#ifndef _BOMB_LAYOUTS_H
-#define _BOMB_LAYOUTS_H
+#pragma once
 
 #include "layout.h"
 
 class LayoutEmpty : public Layout {
-public:
+ public:
 	void setup(unsigned short players){
 		for (unsigned short y = 0; y < playground.getHeight(); y++)
-			for (unsigned short x = 0; x < playground.getWidth(); x++){
-				cell& c = playground.get(x,y);
+			for (unsigned short x = 0; x < playground.getWidth(); x++) {
+				cell& c = playground.get(x, y);
 				c.value = 0;
 				// Outer Walls
 				if (y == 0 || x == 0 || y == playground.getHeight()-1 || x == playground.getWidth() - 1)
@@ -23,5 +22,3 @@ public:
 		defaultPlayer(players);
 	}
 };
-
-#endif

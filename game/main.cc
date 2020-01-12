@@ -13,6 +13,7 @@
 #include "layout.h"
 #include "player.h"
 #include "game.h"
+#include "menu.h"
 
 
 using namespace std;
@@ -35,7 +36,7 @@ int main(){
 	player[0].keys[Player::MOVE_RIGHT] = SDLK_RIGHT;
 	player[0].keys[Player::MOVE_BOMB] = SDLK_SPACE;
 
-	player[1].keys[Player::MOVE_UP] = SDLK_w;
+/*	player[1].keys[Player::MOVE_UP] = SDLK_w;
 	player[1].keys[Player::MOVE_DOWN] = SDLK_s;
 	player[1].keys[Player::MOVE_LEFT] = SDLK_a;
 	player[1].keys[Player::MOVE_RIGHT] = SDLK_d;
@@ -46,11 +47,15 @@ int main(){
 	player[2].keys[Player::MOVE_LEFT] = SDLK_j;
 	player[2].keys[Player::MOVE_RIGHT] = SDLK_l;
 	player[2].keys[Player::MOVE_BOMB] = SDLK_RSHIFT;
-
+*/
 	player[0].load("img/skin_diver.png");
 	player[1].load("img/skin_blue.png");
 	player[2].load("img/skin_cat.png");
 	player[3].load("img/skin_bride.png");
-
-	return game.play(3,4) ? 0 : 1;
+/*
+	Menu menu;
+	menu.show();
+	return 0;
+*/
+	return game.play(4,4) ? 0 : 1;
 }

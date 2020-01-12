@@ -1,11 +1,10 @@
 #include "layout.h"
 #include "player.h"
 
-
-void Layout::defaultLayout(){
+void Layout::defaultLayout() {
 	for (unsigned short y = 0; y < playground.getHeight(); y++)
-		for (unsigned short x = 0; x < playground.getWidth(); x++){
-			cell& c = playground.get(x,y);
+		for (unsigned short x = 0; x < playground.getWidth(); x++) {
+			cell& c = playground.get(x, y);
 			c.value = 0;
 			// Outer Walls
 			if (y == 0 || x == 0 || y == playground.getHeight()-1 || x == playground.getWidth() - 1)
@@ -22,15 +21,12 @@ void Layout::defaultLayout(){
 		}
 }
 
-void Layout::defaultPlayer(unsigned short players){
+void Layout::defaultPlayer(unsigned short players) {
 	for (int p = 0; p < players; p++)
 		player[p].init(p < 2 ? 1 : (playground.getWidth() - 2), p % 2 ? 1 : (playground.getHeight() - 2));
 }
 
-
-
-void Layout::setup(unsigned short players){
+void Layout::setup(unsigned short players) {
 	defaultLayout();
 	defaultPlayer(players);
 }
-

@@ -1,5 +1,4 @@
-#ifndef _BOMB_PLAYER_H
-#define _BOMB_PLAYER_H
+#pragma once
 
 class Player;
 #include "def.h"
@@ -8,10 +7,30 @@ class Player;
 #include "item.h"
 
 class Player {
-public:
-	enum PlayerDir { MOVE_UP = 3, MOVE_DOWN = 0, MOVE_LEFT = 1, MOVE_RIGHT = 2, MOVE_BOMB = 4, MOVE_AUTO = 0xf, MOVE_HEAVEN = 0xf0, MOVE_WON = 0xf1, MOVE_WAIT = 0xff};
+ public:
 
-	enum PlayerSickness { SICK_NONE, SICK_NOBOMB, SICK_NOPOWER, SICK_SLOW, SICK_INVISIBLE, SICK_FUZELONG, SICK_FUZESHORT, SICK_DROPBOMB };
+	enum PlayerDir {
+		MOVE_UP = 3,
+		MOVE_DOWN = 0,
+		MOVE_LEFT = 1,
+		MOVE_RIGHT = 2,
+		MOVE_BOMB = 4,
+		MOVE_AUTO = 0xf,
+		MOVE_HEAVEN = 0xf0,
+		MOVE_WON = 0xf1,
+		MOVE_WAIT = 0xff
+	};
+
+	enum PlayerSickness {
+		SICK_NONE,
+		SICK_NOBOMB,
+		SICK_NOPOWER,
+		SICK_SLOW,
+		SICK_INVISIBLE,
+		SICK_FUZELONG,
+		SICK_FUZESHORT,
+		SICK_DROPBOMB
+	};
 
 	enum PlayerPoints {
 		POINT_SURVIVE       = 100000,
@@ -28,7 +47,7 @@ public:
 
 	Sprite skin;
 
-private:
+ private:
 	unsigned short size;
 	unsigned short figureSpace;
 	unsigned short x;
@@ -44,7 +63,7 @@ private:
 	unsigned short sicknessTimer;
 	unsigned short sicknessCounter;
 	unsigned int points;
-	
+
 	bool alive;
 	enum PlayerDir dir;
 	unsigned int counter;
@@ -62,20 +81,21 @@ private:
 	bool shouldBomb(unsigned short _x, unsigned short _y);
 	bool atPos(unsigned short x, unsigned short y);
 	bool findTarget(unsigned short x, unsigned short y, enum Playground::PlaygroundAccess access);
-	bool near(unsigned short _x,unsigned short _y);
+	bool near(unsigned short _x, unsigned short _y);
 
-protected:
+ protected:
 	friend class Playground;
 	bool wait, cover;
 
-public:
+ public:
 	Player();
 
 	void init(unsigned short _x, unsigned short _y, unsigned short _tileSize = defaultTileSize);
 
-	void load(const char * path, unsigned short _size = 64, unsigned short _figureSpace = 20, short _offsetX = -31, short _offsetY = -46);
+	void load(const char * path, unsigned short _size = 64, unsigned short _figureSpace = 20,
+	          short _offsetX = -31, short _offsetY = -46);
 
-	void getPos(unsigned short &_x,unsigned short &_y);
+	void getPos(unsigned short &_x, unsigned short &_y);
 
 	void move(enum PlayerDir _dir = MOVE_AUTO);
 
@@ -87,7 +107,7 @@ public:
 
 	void resetPoints();
 
-	bool isAlive(){
+	bool isAlive() {
 		return alive;
 	}
 
@@ -103,5 +123,3 @@ public:
 };
 
 extern Player player[maxPlayer];
-
-#endif
