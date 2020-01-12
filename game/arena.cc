@@ -1,9 +1,6 @@
 #include "arena.h"
-
+#include "utils.h"
 #include "player.h"
-
-#include <cassert>
-#include <iostream>
 
 Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize, const char * groundSprite,
              const unsigned short blockAni, const char * bombSprite, const char * fireSprite, const char * itemSprite,
@@ -76,7 +73,7 @@ unsigned short Arena::fireSprite(unsigned short x, unsigned short y) {
 			assert(false);
 			break;
 		case 0:
-			std::cout << "invalid fire" << count <<  std::endl;
+			DBG << "invalid fire" << count <<  endl;
 			[[gnu::fallthrough]];
 		case 2:
 			if (up && down)

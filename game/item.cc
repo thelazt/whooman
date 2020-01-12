@@ -1,6 +1,7 @@
 #include "item.h"
 #include "def.h"
 #include "playground.h"
+#include "utils.h"
 
 void Item::distribute(struct ItemProbability distribution) {
 	struct xy {

@@ -6,7 +6,7 @@ const unsigned defaultStatsHeight = 36;
 
 const unsigned maxPlayer = 4;
 
-const unsigned short SUBTICK_US = 16000;
+const unsigned short SUBTICK_MS = 16;
 const unsigned short SUBTICKS = 3;
 const unsigned short TICK_FIRE = 8;
 const unsigned short TICK_BLOCKONFIRE = 7;

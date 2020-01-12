@@ -5,7 +5,6 @@
 
 class Menu {
 	Sprite background;
-	bool input();
 
  public:
 	Menu();

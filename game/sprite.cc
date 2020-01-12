@@ -10,7 +10,7 @@ bool Sprite::init = false;
 
 Sprite::Sprite(const char * path, unsigned short w, unsigned short h) {
 	if (!init && !(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-		std::cout << "SDL_image could not initialize! SDL_image Error: " <<IMG_GetError() <<std::endl;
+		std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
 		exit(1);
 	}
 	init = true;

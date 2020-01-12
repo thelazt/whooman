@@ -5,6 +5,7 @@ class Player;
 #include "sprite.h"
 #include "playground.h"
 #include "item.h"
+#include "input.h"
 
 class Player {
  public:
@@ -41,7 +42,7 @@ class Player {
 		POINT_ALIVE         = 1
 	};
 
-	int keys[5];
+	Input::Method input;
 
 	const unsigned short id;
 

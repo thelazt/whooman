@@ -1,37 +1,27 @@
-#include "SDL/SDL.h"
-#include <unistd.h>
-
 #include "def.h"
 #include "game.h"
 #include "arenas.h"
+#include "input.h"
 #include "player.h"
 #include "screen.h"
 #include "layouts.h"
-
-SDL_Event event;
+#include "utils.h"
 
 bool Game::input(enum Player::PlayerDir (&move)[maxPlayer]) {
-	while(SDL_PollEvent(&event)) {
-		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
-			return false;
-		} else {
-			for (unsigned short p = 0; p < maxPlayer; p++) {
-				for (enum Player::PlayerDir e = Player::MOVE_DOWN; e <= Player::MOVE_BOMB; e = (enum Player::PlayerDir)(e + 1)) {
-					if (event.key.keysym.sym == player[p].keys[e]) {
-						if (event.type == SDL_KEYDOWN) {
-							if (e == Player::MOVE_BOMB)
-								player[p].bomb();
-							else
-								move[p] = e;
-						} else if (event.type == SDL_KEYUP && move[p] == e) {
-							move[p] = Player::MOVE_WAIT;
-						}
-					}
-				}
+	if (Input::update()) {
+		for (unsigned short p = 0; p < maxPlayer; p++) {
+			if (player[p].input != Input::NONE) {
+				move[p] = Player::MOVE_WAIT;
+				if (Input::active(player[p].input, Input::PLACE_BOMB))
+					player[p].bomb();
+				for (int a = 0; a < Input::PLACE_BOMB; a++)
+					if (Input::active(player[p].input, static_cast<Input::Action>(a)))
+						move[p] = static_cast<Player::PlayerDir>(a);
 			}
 		}
+		return true;
 	}
-	return true;
+	return false;
 }
 
 Arena * Game::newArena(enum ArenaName arena, unsigned short _offsetX, unsigned short _offsetY,
@@ -84,7 +74,7 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 		// Initialize Player
 		enum Player::PlayerDir move[maxPlayer];  // NOLINT
 		for (unsigned short p = 0; p < _player; p++)
-				move[p] = player[p].keys[Player::MOVE_BOMB] == 0 ? Player::MOVE_AUTO : Player::MOVE_WAIT;
+			move[p] = player[p].input == Input::NONE ? Player::MOVE_AUTO : Player::MOVE_WAIT;
 		// Game loop
 		unsigned short i = 0;
 		while(state == Playground::GAME_ACTIVE) {
@@ -103,7 +93,7 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 				// Draw
 				playground.draw();
 				// Wait.
-				usleep(SUBTICK_US);
+				wait(1);
 			}
 		}
 		if (state == Playground::GAME_WON || state == Playground::GAME_DRAW) {
@@ -112,7 +102,7 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 				// Draw
 				playground.draw();
 				// Wait.
-				usleep(static_cast<int>(SUBTICK_US) * static_cast<int>(SUBTICKS));
+				wait(SUBTICKS);
 			}
 		}
 	}

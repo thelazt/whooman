@@ -1,17 +1,12 @@
 #include "player.h"
 
-#include <climits>
-#include <iostream>
-
 #include "playground.h"
 #include "arena.h"
+#include "utils.h"
 
 unsigned short Player::idCounter = 0;
 
-Player::Player() : id(idCounter++), counter(0) {
-	for (size_t i = 0; i < 5 ; i++)
-		keys[i] = 0;
-}
+Player::Player() : input(Input::NONE), id(idCounter++), counter(0) {}
 
 void Player::init(unsigned short _x, unsigned short _y, unsigned short _tileSize) {
 	tileSize = _tileSize;

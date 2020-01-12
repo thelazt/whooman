@@ -1,9 +1,8 @@
-#include "SDL/SDL.h"
-#include <unistd.h>
-
 #include "menu.h"
 
 #include "player.h"
+#include "utils.h"
+#include "input.h"
 
 static const char * skins[] = {
 		"img/skin_default.png",
@@ -35,35 +34,13 @@ static const char * skins[] = {
 
 Menu::Menu() : background("img/menu_background.png", 1024, 768) {}
 
-bool Menu::input() {
-	SDL_Event event;
-	while(SDL_PollEvent(&event)) {
-		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
-			return false;
-/*		else
-			for (unsigned short p = 0; p < maxPlayer; p++)
-				for (enum Player::PlayerDir e = Player::MOVE_DOWN; e <= Player::MOVE_BOMB; e = (enum Player::PlayerDir)(e + 1))
-					if (event.key.keysym.sym == player[p].keys[e]){
-						if (event.type == SDL_KEYDOWN){
-							if (e == Player::MOVE_BOMB)
-								player[p].bomb();
-							else
-								move[p] = e;
-						} else if (event.type == SDL_KEYUP && move[p] == e)
-							move[p] = Player::MOVE_WAIT;
-					}
-*/
-	}
-	return true;
-}
-
 
 void Menu::stats() {
 	Sprite podium("img/menu_podium.png", 192, 122);
 
 	const unsigned short wleft = 416;
 	bool ani = false;
-	while (input()) {
+	while (Input::update()) {
 		ani = !ani;
 		screen.lock();
 		background.draw(0, 0, 0);
@@ -83,7 +60,7 @@ void Menu::show() {
 	Sprite control("img/menu_control.png", 96, 72);
 	Sprite playground("img/menu_playgrounds.png", 96, 59);
 
-	while (input()) {
+	while (Input::update()) {
 		screen.lock();
 		background.draw(0, 0, 0);
 		const unsigned short labelTop = 300;
@@ -94,7 +71,7 @@ void Menu::show() {
 		}
 		screen.unlock();
 		screen.flip();
-		usleep(300000);
+		wait(20);
 	}
 
 }

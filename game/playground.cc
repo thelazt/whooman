@@ -1,10 +1,8 @@
-#include <iostream>
-#include <cassert>
-
 #include "playground.h"
 #include "player.h"
 #include "screen.h"
 #include "item.h"
+#include "utils.h"
 
 bool Playground::create(Arena * _arena, Layout& layout, enum Item::ItemSet itemset, unsigned short _players) {
 	if (_players < 2) {
@@ -48,6 +46,7 @@ void Playground::access(unsigned short x, unsigned short y, unsigned short _play
 			arena->update();
 			break;
 		case CELL_FIRE:
+		case CELL_BLOCKONFIRE:
 			if (c.player != _player)
 				player[c.player].addPoint(Player::POINT_KILL_PLAYER);
 			player[_player].die();
@@ -57,7 +56,7 @@ void Playground::access(unsigned short x, unsigned short y, unsigned short _play
 			break;
 		default:
 			// error
-			std::cerr << "Should not happen!" << c.type << std::endl;
+			DBG << "Should not happen!" << c.type << endl;
 	}
 }
 
@@ -134,6 +133,7 @@ void Playground::reevaluate() {
 					dangerous(x, y, c.extra);
 					break;
 				case CELL_FIRE:
+				case CELL_BLOCKONFIRE:
 					dangerzone[y][x]++;
 					break;
 				default:
@@ -149,6 +149,7 @@ bool Playground::dangerous(unsigned short x, unsigned short y) {
 		case CELL_ITEM:
 		case CELL_GRASS:
 		case CELL_FIRE:
+		case CELL_BLOCKONFIRE:
 		case CELL_BOMB:
 			dangerzone[y][x]++;
 			return true;
