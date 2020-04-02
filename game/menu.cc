@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "input.h"
 
+/*
 static const char * skins[] = {
 		"img/skin_default.png",
 		"img/skin_blue.png",
@@ -31,6 +32,7 @@ static const char * skins[] = {
 		"img/skin_bear.png",
 		"img/skin_bat.png",
 	};
+*/
 
 Menu::Menu() : background("img/menu_background.png", 1024, 768) {}
 
@@ -51,7 +53,7 @@ void Menu::stats() {
 		player[1].skin.draw(ani ? 15 : 16, wleft + 62, 360);
 		Screen::unlock();
 		Screen::flip();
-		Guarded_Bell::sleep(300);
+		GuardedBell::sleep(300);
 	}
 }
 
@@ -71,7 +73,7 @@ void Menu::show() {
 		}
 		Screen::unlock();
 		Screen::flip();
-		Guarded_Bell::sleep(1);
+		GuardedBell::sleep(1);
 	}
 
 }

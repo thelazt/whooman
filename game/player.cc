@@ -42,10 +42,10 @@ void Player::load(const char * path, unsigned short _size, unsigned short _figur
 }
 
 bool Player::shouldBomb(unsigned short _x, unsigned short _y) {
-	if (playground.get(_x, _y).type == CELL_BLOCK && random() % 2)
+	if (playground.get(_x, _y).type == CELL_BLOCK && number() % 2)
 		return true;
 	for (int p = 0; p < playground.playerCount(); p++)
-		if (p != id && player[p].atPos(_x, _y) && random() % 2)
+		if (p != id && player[p].atPos(_x, _y) && number() % 2)
 			return true;
 	return false;
 }

@@ -12,7 +12,7 @@ using std::endl;
 #define DBG std::cerr
 #define USHRT_MAX 65535
 
-class Guarded_Bell {
+class GuardedBell {
 	int t;
 
  public:
@@ -21,11 +21,11 @@ class Guarded_Bell {
 	}
 
 	void sleep() {
-		usleep(1000 * static_cast<int>(SUBTICK_MS) * t);
+		usleep(1000 * t);
 	}
 
 	static void sleep(unsigned int ms) {
-		Guarded_Bell bell;
+		GuardedBell bell;
 		bell.set(ms);
 		bell.sleep();
 	}

@@ -14,6 +14,10 @@ bool Playground::create(Arena * _arena, Layout& layout, enum Item::ItemSet items
 		layout.setup(_players);
 		Item::distribute(itemset);
 		arena->create();
+		// Draw in each buffer
+		Screen::flip();
+		arena->create();
+
 		for (unsigned short y = 0; y < playground.height; y++)
 			for (unsigned short x = 0; x < playground.width; x++)
 				dangerzone[y][x] = 0;
@@ -291,6 +295,7 @@ void Playground::draw(bool tick) {
 
 	Screen::unlock();
 	Screen::flip();
+
 
 }
 
