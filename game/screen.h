@@ -15,7 +15,7 @@ namespace Screen {
 
 	void unlock();
 
-	void flip();
+	void flip(bool force = false);
 
 	void deinit();
 }  // namespace Screen

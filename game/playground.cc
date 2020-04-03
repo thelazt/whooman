@@ -15,7 +15,7 @@ bool Playground::create(Arena * _arena, Layout& layout, enum Item::ItemSet items
 		Item::distribute(itemset);
 		arena->create();
 		// Draw in each buffer
-		Screen::flip();
+		Screen::flip(true);
 		arena->create();
 
 		for (unsigned short y = 0; y < playground.height; y++)

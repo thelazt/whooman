@@ -33,7 +33,8 @@ void unlock() {
 	}
 }
 
-void flip() {
+void flip(bool force) {
+	(void) force;
 	SDL_Flip(content);
 }
 

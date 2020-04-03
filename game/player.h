@@ -46,7 +46,7 @@ class Player {
 
 	const unsigned short id;
 
-	Sprite skin;
+	Sprite * skin = nullptr;
 
  private:
 	unsigned short size;

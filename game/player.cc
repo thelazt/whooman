@@ -38,7 +38,10 @@ void Player::load(const char * path, unsigned short _size, unsigned short _figur
 	offsetY = _offsetY;
 	size = _size;
 	figureSpace = _figureSpace;
-	skin = Sprite(path, _size, _size);
+	if (skin != nullptr) {
+		delete(skin);
+	}
+	skin = new Sprite(path, _size, _size);
 }
 
 bool Player::shouldBomb(unsigned short _x, unsigned short _y) {
@@ -270,7 +273,7 @@ void Player::draw(bool tick) {
 		num = dir * 3 + (ani == 3 ? 1 : ani);
 	}
 	if (num >= 0 && (sickness == 0 || (sickness != SICK_INVISIBLE && (sicknessCounter++) % 2 == 0)))
-		skin.draw(num, (x >> factor) + offsetXabs, (y >> factor) + offsetYabs);
+		skin->draw(num, (x >> factor) + offsetXabs, (y >> factor) + offsetYabs);
 }
 
 Player player[maxPlayer];  // NOLINT

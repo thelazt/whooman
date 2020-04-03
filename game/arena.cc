@@ -136,7 +136,7 @@ void Arena::statusbar(short p, bool init) {
 			stats.draw(12, x + start, y);
 		stats.draw(10, defaultStatsWidth * 3 + start, y);
 		stats.draw(11, defaultStatsWidth * 11 + start, y);
-		player[p].skin.draw(alive[p] ? 0 : 13, start, y - 1, 0, 36);
+		player[p].skin->draw(alive[p] ? 0 : 13, start, y - 1, 0, 36);
 	}
 	unsigned int sum = player[p].getPoints();
 	for (short q = 10; q > 3 ; q--) {
