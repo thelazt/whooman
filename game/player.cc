@@ -78,15 +78,13 @@ bool Player::findTarget(unsigned short x, unsigned short y, enum Playground::Pla
 		target[targets++].set(x, y + 1, MOVE_DOWN);
 	if (playground.accessible(x, y - 1, access))
 		target[targets++].set(x, y - 1, MOVE_UP);
-	int i = 0;
+	unsigned short i = 0;
 	if (targets == 0) {
 		return false;
 	} else if (targets > 1) {
 		i = number() % targets;
-		if (target[i].x == previousX && target[i].y == previousY) {
-			target[i] = target[targets - 1];
-			i = number() % (targets - 1);
-		}
+		if (target[i].x == previousX && target[i].y == previousY)
+			i = (i + 1) % targets;
 	}
 	previousX = x;
 	previousY = y;

@@ -125,19 +125,17 @@ unsigned short Arena::decorate(short x, short y) {
 		return 0;
 }
 
-void Arena::statusbar(short p, bool init) {
-	static bool alive[maxPlayer];
+void Arena::statusbar(short p) {
 	short screenPart = Screen::getWidth() / playground.playerCount();
 	short start = screenPart * p;
 	short y = offsetY - defaultStatsHeight;
-	if (init || alive[p] != player[p].isAlive()) {
-		alive[p] = player[p].isAlive();
-		for (short x = 0; x < screenPart; x += defaultStatsWidth)
-			stats.draw(12, x + start, y);
-		stats.draw(10, defaultStatsWidth * 3 + start, y);
-		stats.draw(11, defaultStatsWidth * 11 + start, y);
-		player[p].skin->draw(alive[p] ? 0 : 13, start, y - 1, 0, 36);
-	}
+	for (short x = 0; x < screenPart; x += defaultStatsWidth)
+		stats.draw(12, x + start, y);
+	stats.draw(10, defaultStatsWidth * 3 + start, y);
+	stats.draw(11, defaultStatsWidth * 11 + start, y);
+
+	player[p].skin->draw(player[p].isAlive() ? 0 : 13, start, y - 1, 0, 36);
+
 	unsigned int sum = player[p].getPoints();
 	for (short q = 10; q > 3 ; q--) {
 		stats.draw(sum % 10, defaultStatsWidth * q + start, y);
@@ -148,7 +146,7 @@ void Arena::statusbar(short p, bool init) {
 void Arena::create() {
 	// statusbar
 	for (short p = 0; p < 4 ; p++)
-		statusbar(p, true);
+		statusbar(p);
 	// outside
 	for (short y = 0; offsetY + y * tileSize < (short)(Screen::getHeight() + tileSize); y++) {
 		for (short x = -1; offsetX + x * tileSize > -((short)tileSize); x--)

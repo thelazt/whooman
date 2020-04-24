@@ -31,6 +31,6 @@ class GuardedBell {
 	}
 };
 
-inline int number() {
+inline unsigned number() {
 	return rand();
 }

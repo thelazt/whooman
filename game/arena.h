@@ -13,7 +13,7 @@ class Arena {
 	const unsigned short blockAni;
 	unsigned short fireSprite(unsigned short x, unsigned short y);
 
-	void statusbar(short player, bool init = false);
+	void statusbar(short player);
 
 	Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize, const char * groundSprite,
 	      const unsigned short blockAni = 1, const char * bombSprite = "img/default_bomb.png",
