@@ -11,5 +11,5 @@ class Layout {
 
  public:
 	virtual ~Layout() {}
-	virtual void setup(unsigned short players);
+	virtual void setup(unsigned short players) = 0;
 };

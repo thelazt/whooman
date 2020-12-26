@@ -4,6 +4,7 @@ class Item {
  public:
 	enum ItemSet {
 		SET_BASIC,
+		SET_FAST,
 		SET_CLASSIC,
 		SET_RANDOM
 	};

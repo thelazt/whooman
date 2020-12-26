@@ -205,7 +205,7 @@ bool Playground::accessible(unsigned short x, unsigned short y, enum PlaygroundA
 				return false;
 			[[gnu::fallthrough]];
 		case ACCESS_DANGEROUS:
-			if (field[y][x].type == CELL_FIRE)
+			if (field[y][x].type == CELL_FIRE || field[y][x].type == CELL_BLOCKONFIRE)
 				return false;
 			[[gnu::fallthrough]];
 		default:

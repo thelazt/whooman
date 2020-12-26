@@ -22,7 +22,14 @@ class Game {
 		ARENA_WOOD,
 		ARENA_RANDOM
 	};
-	enum LayoutName { LAYOUT_CLASSIC, LAYOUT_EMPTY, LAYOUT_RANDOM };
+	enum LayoutName {
+		LAYOUT_CLASSIC,
+		LAYOUT_DENSE,
+		LAYOUT_SPARSE,
+		LAYOUT_PATCHY,
+		LAYOUT_RSTART,
+		LAYOUT_EMPTY,
+		LAYOUT_RANDOM };
 
  protected:
 	enum Playground::GameState round(unsigned short _player, enum ArenaName arena, enum LayoutName layout,
@@ -38,7 +45,7 @@ class Game {
 
  public:
 	bool play(unsigned short _player = maxPlayer, unsigned short rounds = 3, unsigned short width = 15,
-	          unsigned short height = 13, enum ArenaName _arena = ARENA_RANDOM, enum LayoutName _layout = LAYOUT_CLASSIC,
+	          unsigned short height = 13, enum ArenaName _arena = ARENA_RANDOM, enum LayoutName _layout = LAYOUT_RANDOM,
 	          enum Item::ItemSet itemset = Item::SET_CLASSIC);
 };
 

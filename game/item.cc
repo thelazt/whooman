@@ -44,6 +44,15 @@ struct Item::ItemProbability Item::getSet(enum Item::ItemSet name) {
 				{ 0, 0 },		// ITEM_ULTRA
 				{ 0, 0 },		// ITEM_SICK
 			}};  //NOLINT
+		case SET_FAST:
+			return (struct Item::ItemProbability) {{
+				{ 0, 0}, 		// ITEM_NONE (ignored)
+				{ 10, 15 }, 	// ITEM_BOMB
+				{ 3, 8 },		// ITEM_SPEED
+				{ 8, 10 },		// ITEM_POWER
+				{ 2, 5 },		// ITEM_ULTRA
+				{ 1, 3 },		// ITEM_SICK
+			}};  //NOLINT
 		case SET_RANDOM:
 			return getSet((enum ItemSet) (number() % SET_RANDOM));
 		default:

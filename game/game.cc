@@ -46,7 +46,7 @@ Arena * Game::newArena(enum ArenaName arena, unsigned short _offsetX, unsigned s
 		case ARENA_WOOD:
 			return new ArenaWood(_offsetX, _offsetY, _tileSize);
 		case ARENA_RANDOM:
-			return newArena((enum ArenaName) (number() % ARENA_RANDOM), _offsetX, _offsetY, _tileSize);
+			return newArena(static_cast<enum ArenaName>(number() % ARENA_RANDOM), _offsetX, _offsetY, _tileSize);
 		default:
 			return new ArenaDefault(_offsetX, _offsetY, _tileSize);
 	}
@@ -54,10 +54,20 @@ Arena * Game::newArena(enum ArenaName arena, unsigned short _offsetX, unsigned s
 
 Layout * Game::newLayout(enum LayoutName layout) const {
 	switch(layout) {
+		case LAYOUT_EMPTY:
+			return new LayoutEmpty();
+		case LAYOUT_DENSE:
+			return new LayoutDense();
+		case LAYOUT_SPARSE:
+			return new LayoutSparse();
+		case LAYOUT_PATCHY:
+			return new LayoutPatchy();
+		case LAYOUT_RSTART:
+			return new LayoutRandomStart();
 		case LAYOUT_RANDOM:
-			return newLayout((enum LayoutName) (number() % LAYOUT_RANDOM));
+			return newLayout(static_cast<enum LayoutName>(number() % LAYOUT_RANDOM));
 		default:
-			return new Layout();
+			return new LayoutClassic();
 	}
 }
 

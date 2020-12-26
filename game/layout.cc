@@ -25,8 +25,3 @@ void Layout::defaultPlayer(unsigned short players) {
 	for (int p = 0; p < players; p++)
 		player[p].init(p < 2 ? 1 : (playground.getWidth() - 2), p % 2 ? 1 : (playground.getHeight() - 2));
 }
-
-void Layout::setup(unsigned short players) {
-	defaultLayout();
-	defaultPlayer(players);
-}
