@@ -34,3 +34,8 @@ class GuardedBell {
 inline unsigned number() {
 	return rand();
 }
+
+template<class T, size_t N>
+constexpr size_t size(T (&/*unused*/)[N]) {
+	return N;
+}

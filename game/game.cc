@@ -10,7 +10,7 @@
 bool Game::input(enum Player::PlayerDir (&move)[maxPlayer]) {
 	if (Input::update()) {
 		for (unsigned short p = 0; p < maxPlayer; p++) {
-			if (player[p].input != Input::NONE) {
+			if (player[p].input != Input::NONE && player[p].input != Input::AI) {
 				move[p] = Player::MOVE_WAIT;
 				if (Input::active(player[p].input, Input::PLACE_BOMB))
 					player[p].bomb();
@@ -84,7 +84,7 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 		// Initialize Player
 		enum Player::PlayerDir move[maxPlayer];  // NOLINT
 		for (unsigned short p = 0; p < _player; p++)
-			move[p] = player[p].input == Input::NONE ? Player::MOVE_AUTO : Player::MOVE_WAIT;
+			move[p] = player[p].input == Input::AI ? Player::MOVE_AUTO : Player::MOVE_WAIT;
 		// Game loop
 		unsigned short i = 0;
 		while(state == Playground::GAME_ACTIVE) {

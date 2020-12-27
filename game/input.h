@@ -19,7 +19,7 @@ enum Method {
 
 	MOUSE,
 
-	METHODS,
+	AI,
 
 	NONE,
 };
@@ -28,4 +28,5 @@ bool update();
 
 bool active(enum Method method, enum Action action);
 
+bool mouse(int &pos_x, int &pos_y);
 }  // namespace Input

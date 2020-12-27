@@ -4,7 +4,7 @@
 #include "sprite.h"
 
 class Menu {
-	Sprite background;
+	Sprite background, cursor, podium;
 
  public:
 	Menu();

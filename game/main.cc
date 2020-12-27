@@ -16,9 +16,9 @@ int main() {
 	srand(time(NULL));
 	Menu menu;
 
-	/*menu.show();
+	menu.show();
 	return 0;
-*/
+
 	game.play(4, 4);
 	Screen::deinit();
 	return 0;

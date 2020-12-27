@@ -12,6 +12,8 @@ class Sprite {
 	static bool init;
 
  public:
+	char * path;
+
 	explicit Sprite(const char * path = nullptr, unsigned short w = defaultTileSize, unsigned short h = defaultTileSize);
 
 	void load(const char * path, unsigned short w = defaultTileSize, unsigned short h = defaultTileSize);
