@@ -10,30 +10,33 @@
 class Game {
  public:
 	enum ArenaName {
-		ARENA_ATOMIC,
-		ARENA_CASTLE,
-		ARENA_CITY,
-		ARENA_CLASSIC,
-		ARENA_DIRT,
-		ARENA_FACTORY,
 		ARENA_HAL,
-		ARENA_RETRO,
+		ARENA_CASTLE,
+		ARENA_FACTORY,
+		ARENA_DIRT,
 		ARENA_STATION,
+		ARENA_CLASSIC,
+		ARENA_RETRO,
+		ARENA_CITY,
 		ARENA_WOOD,
+		ARENA_ATOMIC,
+
 		ARENA_RANDOM
 	};
 	enum LayoutName {
 		LAYOUT_CLASSIC,
+		LAYOUT_RSTART,
 		LAYOUT_DENSE,
 		LAYOUT_SPARSE,
 		LAYOUT_PATCHY,
-		LAYOUT_RSTART,
 		LAYOUT_EMPTY,
+
 		LAYOUT_RANDOM };
 
  protected:
-	enum Playground::GameState round(unsigned short _player, enum ArenaName arena, enum LayoutName layout,
-	                                 enum Item::ItemSet itemset, unsigned short _offsetX = 0, unsigned short _offsetY = 0,
+	enum Playground::GameState round(unsigned short _player, unsigned short round, unsigned short rounds,
+	                                 enum ArenaName arena, enum LayoutName layout, enum Item::ItemSet itemset,
+	                                 unsigned short _offsetX = 0, unsigned short _offsetY = 0,
 	                                 unsigned short _tileSize = defaultTileSize);
 
 	bool input(enum Player::PlayerDir (&move)[maxPlayer]);

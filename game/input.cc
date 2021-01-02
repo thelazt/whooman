@@ -30,9 +30,9 @@ static const int keys[keyMethods][ACTIONS] = {
 static bool state[AI][ACTIONS];
 static SDL_Event event;
 static int x, y;
-static const int threshold = 2;
+static const int threshold = 4;
 
-bool update() {
+enum Control update() {
 	static bool init = false;
 	if (!init) {
 		init = true;
@@ -42,11 +42,15 @@ bool update() {
 				state[m][a] = false;
 	}
 
+	enum Control c = CONTROL_NONE;
 	while(SDL_PollEvent(&event)) {
 		switch(event.type) {
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-					return false;
+				if (event.key.keysym.sym == SDLK_ESCAPE) {
+					c = CONTROL_EXIT;
+				} else if (event.key.keysym.sym == SDLK_RETURN) {
+					c = CONTROL_ENTER;
+				}
 			case SDL_KEYUP:
 				for (unsigned short k = 0; k < keyMethods; k++) {
 					for (int a = 0; a < ACTIONS; a++) {
@@ -66,15 +70,27 @@ bool update() {
 				int oldx = x;
 				int oldy = y;
 				state[Method::MOUSE][Action::PLACE_BOMB] = SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT);
-				state[Method::MOUSE][Action::MOVE_LEFT] = x < oldx + threshold;
-				state[Method::MOUSE][Action::MOVE_RIGHT] = x > oldx - threshold;
-				state[Method::MOUSE][Action::MOVE_UP] = y < oldy + threshold;
-				state[Method::MOUSE][Action::MOVE_DOWN] = y > oldy - threshold;
+				int deltaX = x < oldx ? (oldx - x) : (x - oldx);
+				int deltaY = y < oldy ? (oldy - y) : (y - oldy);
+				if (deltaX > 1 || deltaY > 1) {
+
+					if (deltaX > deltaY) {
+						state[Method::MOUSE][Action::MOVE_LEFT] = x < (oldx - threshold);
+						state[Method::MOUSE][Action::MOVE_RIGHT] = x > (oldx + threshold);
+						state[Method::MOUSE][Action::MOVE_UP] = false;
+						state[Method::MOUSE][Action::MOVE_DOWN] = false;
+					} else {
+						state[Method::MOUSE][Action::MOVE_LEFT] = false;
+						state[Method::MOUSE][Action::MOVE_RIGHT] = false;
+						state[Method::MOUSE][Action::MOVE_UP] = y < (oldy - threshold);
+						state[Method::MOUSE][Action::MOVE_DOWN] = y > (oldy + threshold);
+					}
+				}
 				break;
 			  }
 		}
 	}
-	return true;
+	return c;
 }
 
 bool active(enum Method method, enum Action action) {

@@ -13,7 +13,7 @@ Arena::Arena(unsigned short _offsetX, unsigned short _offsetY, unsigned short _t
                blockAni(blockAni),
                offsetX(_offsetX), offsetY(_offsetY), tileSize(_tileSize) {}
 
-void Arena::draw(bool tick) {
+void Arena::draw() {
 	// statusbar
 	for (short p = 0; p < 4 ; p++)
 		statusbar(p);

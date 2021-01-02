@@ -17,9 +17,14 @@ int main() {
 	Menu menu;
 
 	menu.show();
-	return 0;
 
-	game.play(4, 4);
+/*	return 0;
+
+	game.play(3, 4, 19, 15);
+	// 19x15  gross
+	// 15x13
+	// 11x9  klein
+	*/
 	Screen::deinit();
 	return 0;
 }

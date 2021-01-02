@@ -25,7 +25,7 @@ class Arena {
 	const unsigned short offsetX, offsetY;
 	const unsigned short tileSize;
 
-	void draw(bool tick = false);  // ticks might have changed
+	void draw();
 
 	void update();  // Items have changed
 

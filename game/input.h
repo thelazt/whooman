@@ -24,7 +24,13 @@ enum Method {
 	NONE,
 };
 
-bool update();
+enum Control {
+	CONTROL_NONE,
+	CONTROL_ENTER,
+	CONTROL_EXIT
+};
+
+enum Control update();
 
 bool active(enum Method method, enum Action action);
 

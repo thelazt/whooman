@@ -8,7 +8,7 @@
 #include "utils.h"
 
 bool Game::input(enum Player::PlayerDir (&move)[maxPlayer]) {
-	if (Input::update()) {
+	if (Input::update() != Input::CONTROL_EXIT) {
 		for (unsigned short p = 0; p < maxPlayer; p++) {
 			if (player[p].input != Input::NONE && player[p].input != Input::AI) {
 				move[p] = Player::MOVE_WAIT;
@@ -71,10 +71,26 @@ Layout * Game::newLayout(enum LayoutName layout) const {
 	}
 }
 
-enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _arena, enum LayoutName _layout,
-                                       enum Item::ItemSet itemset, unsigned short _offsetX, unsigned short _offsetY,
-                                       unsigned short _tileSize) {
+enum Playground::GameState Game::round(unsigned short _player, unsigned short round, unsigned short rounds,
+                                       enum ArenaName _arena, enum LayoutName _layout, enum Item::ItemSet itemset,
+                                       unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) {
 	enum Playground::GameState state = Playground::GAME_ACTIVE;
+	// Load Sprites
+	static Sprite * roundTitle = nullptr;
+	static Sprite * roundNumber = nullptr;
+	static Sprite * drawGame = nullptr;
+
+	if (roundTitle == nullptr)
+		roundTitle = new Sprite("img/game_round_title.png", 111, 13);
+	assert(roundTitle != nullptr);
+	if (roundNumber == nullptr)
+		roundNumber = new Sprite("img/game_round_number.png", 12, 13);
+	assert(roundNumber != nullptr);
+	assert(round <= 7 && rounds <= 7);
+	if (drawGame == nullptr)
+		drawGame = new Sprite("img/game_draw.png", 300, 115);
+	assert(drawGame != nullptr);
+
 	// Initialize Playground
 	Arena * arena = newArena(_arena, _offsetX, _offsetY, _tileSize);
 	Layout * layout = newLayout(_layout);
@@ -103,7 +119,16 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 					i = 0;
 				}
 				// Draw
-				playground.draw();
+				Screen::lock();
+
+				playground.draw(i == 0);
+
+				roundTitle->draw(0, 20, 735);
+				roundNumber->draw(round - 1, 80, 735);
+				roundNumber->draw(rounds - 1, 136, 735);
+
+				Screen::unlock();
+				Screen::flip();
 				// Wait.
 				bell.sleep();
 			}
@@ -114,7 +139,15 @@ enum Playground::GameState Game::round(unsigned short _player, enum ArenaName _a
 				bell.set(static_cast<int>(SUBTICK_MS) * static_cast<int>(SUBTICKS));
 				playground.tick();
 				// Draw
-				playground.draw();
+				Screen::lock();
+
+				playground.draw(true);
+
+				if (state == Playground::GAME_DRAW)
+					drawGame->draw(0, 362, 300);
+
+				Screen::unlock();
+				Screen::flip();
 				// Wait.
 				bell.sleep();
 			}
@@ -145,7 +178,7 @@ bool Game::play(unsigned short _player, unsigned short rounds, unsigned short wi
 
 	// Start rounds
 	for (unsigned short r = 1; r <= rounds; r++)
-		switch(round(_player, arena, layout, itemset, offsetX, offsetY, defaultTileSize)) {
+		switch(round(_player, r, rounds, arena, layout, itemset, offsetX, offsetY, defaultTileSize)) {
 			case Playground::GAME_DRAW:
 				r--;
 				break;
@@ -154,8 +187,6 @@ bool Game::play(unsigned short _player, unsigned short rounds, unsigned short wi
 			default:
 				return false;
 		}
-
-	// TODO: Show winner
 
 	// return
 	return true;

@@ -219,7 +219,6 @@ void Player::die() {
 		alive = false;
 		dir = MOVE_HEAVEN;
 		ani = 0;
-		playground.check();
 	}
 }
 

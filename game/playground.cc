@@ -280,23 +280,14 @@ enum Playground::GameState Playground::tick() {
 	for (int p = 0; p < players; p++)
 		player[p].tick();
 
-	draw(true);
-
 	return state;
 }
 
 void Playground::draw(bool tick) {
-	Screen::lock();
-
-	arena->draw(tick);
+	arena->draw();
 
 	for (int p = 0; p < players; p++)
 		player[p].draw(tick);
-
-	Screen::unlock();
-	Screen::flip();
-
-
 }
 
 Playground playground;
