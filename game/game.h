@@ -46,6 +46,8 @@ class Game {
 
 	Layout * newLayout(enum LayoutName _layout) const;
 
+	void draw(bool tick, bool msgDraw, unsigned short round, unsigned short rounds);
+
  public:
 	bool play(unsigned short _player = maxPlayer, unsigned short rounds = 3, unsigned short width = 15,
 	          unsigned short height = 13, enum ArenaName _arena = ARENA_RANDOM, enum LayoutName _layout = LAYOUT_RANDOM,

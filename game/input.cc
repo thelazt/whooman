@@ -70,8 +70,8 @@ enum Control update() {
 				int oldx = x;
 				int oldy = y;
 				state[Method::MOUSE][Action::PLACE_BOMB] = SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT);
-				int deltaX = x < oldx ? (oldx - x) : (x - oldx);
-				int deltaY = y < oldy ? (oldy - y) : (y - oldy);
+				unsigned deltaX = x < oldx ? (oldx - x) : (x - oldx);
+				unsigned deltaY = y < oldy ? (oldy - y) : (y - oldy);
 				if (deltaX > 1 || deltaY > 1) {
 
 					if (deltaX > deltaY) {
@@ -97,7 +97,7 @@ bool active(enum Method method, enum Action action) {
 	return state[method][action];
 }
 
-bool mouse(int &pos_x, int &pos_y) {
+bool mouse(unsigned &pos_x, unsigned &pos_y) {
 	pos_x = x;
 	pos_y = y;
 	return state[Method::MOUSE][Action::PLACE_BOMB];

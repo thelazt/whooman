@@ -24,6 +24,5 @@ class Menu {
 
  public:
 	Menu();
-	void stats();
 	void show();
 };

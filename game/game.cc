@@ -71,25 +71,46 @@ Layout * Game::newLayout(enum LayoutName layout) const {
 	}
 }
 
-enum Playground::GameState Game::round(unsigned short _player, unsigned short round, unsigned short rounds,
-                                       enum ArenaName _arena, enum LayoutName _layout, enum Item::ItemSet itemset,
-                                       unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) {
-	enum Playground::GameState state = Playground::GAME_ACTIVE;
+void Game::draw(bool tick, bool msgDraw, unsigned short round, unsigned short rounds) {
 	// Load Sprites
 	static Sprite * roundTitle = nullptr;
 	static Sprite * roundNumber = nullptr;
 	static Sprite * drawGame = nullptr;
 
-	if (roundTitle == nullptr)
+	if (roundTitle == nullptr) {
 		roundTitle = new Sprite("img/game_round_title.png", 111, 13);
-	assert(roundTitle != nullptr);
-	if (roundNumber == nullptr)
+		assert(roundTitle != nullptr);
+	}
+	if (roundNumber == nullptr) {
 		roundNumber = new Sprite("img/game_round_number.png", 12, 13);
-	assert(roundNumber != nullptr);
+		assert(roundNumber != nullptr);
+	}
 	assert(round <= 7 && rounds <= 7);
-	if (drawGame == nullptr)
+	if (drawGame == nullptr) {
 		drawGame = new Sprite("img/game_draw.png", 300, 115);
-	assert(drawGame != nullptr);
+		assert(drawGame != nullptr);
+	}
+
+	Screen::lock();
+
+	playground.draw(tick);
+
+	roundTitle->draw(0, 20, 735);
+	roundNumber->draw(round - 1, 80, 735);
+	roundNumber->draw(rounds - 1, 136, 735);
+
+	if (msgDraw)
+		drawGame->draw(0, 362, 300);
+
+	Screen::unlock();
+	Screen::flip();
+}
+
+enum Playground::GameState Game::round(unsigned short _player, unsigned short round, unsigned short rounds,
+                                       enum ArenaName _arena, enum LayoutName _layout, enum Item::ItemSet itemset,
+                                       unsigned short _offsetX, unsigned short _offsetY, unsigned short _tileSize) {
+	enum Playground::GameState state = Playground::GAME_ACTIVE;
+
 
 	// Initialize Playground
 	Arena * arena = newArena(_arena, _offsetX, _offsetY, _tileSize);
@@ -101,7 +122,11 @@ enum Playground::GameState Game::round(unsigned short _player, unsigned short ro
 		enum Player::PlayerDir move[maxPlayer];  // NOLINT
 		for (unsigned short p = 0; p < _player; p++)
 			move[p] = player[p].input == Input::AI ? Player::MOVE_AUTO : Player::MOVE_WAIT;
+
 		// Game loop
+		draw(false, false, round, rounds);
+		GuardedBell::sleep(1000);
+		Input::update();
 		unsigned short i = 0;
 		while(state == Playground::GAME_ACTIVE) {
 			// Get movements
@@ -119,16 +144,8 @@ enum Playground::GameState Game::round(unsigned short _player, unsigned short ro
 					i = 0;
 				}
 				// Draw
-				Screen::lock();
+				draw(i == 0, false, round, rounds);
 
-				playground.draw(i == 0);
-
-				roundTitle->draw(0, 20, 735);
-				roundNumber->draw(round - 1, 80, 735);
-				roundNumber->draw(rounds - 1, 136, 735);
-
-				Screen::unlock();
-				Screen::flip();
 				// Wait.
 				bell.sleep();
 			}
@@ -138,16 +155,10 @@ enum Playground::GameState Game::round(unsigned short _player, unsigned short ro
 				GuardedBell bell;
 				bell.set(static_cast<int>(SUBTICK_MS) * static_cast<int>(SUBTICKS));
 				playground.tick();
+
 				// Draw
-				Screen::lock();
+				draw(true, state == Playground::GAME_DRAW, round, rounds);
 
-				playground.draw(true);
-
-				if (state == Playground::GAME_DRAW)
-					drawGame->draw(0, 362, 300);
-
-				Screen::unlock();
-				Screen::flip();
 				// Wait.
 				bell.sleep();
 			}

@@ -15,6 +15,10 @@ namespace Screen {
 
 	void unlock();
 
+	void block();
+
+	void unblock();
+
 	void flip(bool force = false);
 
 	void deinit();

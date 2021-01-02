@@ -4,6 +4,7 @@
 #include "item.h"
 #include "utils.h"
 
+
 bool Playground::create(Arena * _arena, Layout& layout, enum Item::ItemSet itemset, unsigned short _players) {
 	if (_players < 2) {
 		return false;
@@ -13,10 +14,13 @@ bool Playground::create(Arena * _arena, Layout& layout, enum Item::ItemSet items
 		arena = _arena;
 		layout.setup(_players);
 		Item::distribute(itemset);
-		arena->create();
+
 		// Draw in each buffer
+		Screen::block();
+		arena->create();
 		Screen::flip(true);
 		arena->create();
+		Screen::unblock();
 
 		for (unsigned short y = 0; y < playground.height; y++)
 			for (unsigned short x = 0; x < playground.width; x++)

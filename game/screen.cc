@@ -21,6 +21,7 @@ unsigned int getWidth() {
 unsigned int getHeight() {
 	return height;
 }
+
 void lock() {
 	if (SDL_MUSTLOCK(content)) {
 		SDL_LockSurface(content);
@@ -32,6 +33,10 @@ void unlock() {
 		SDL_UnlockSurface(content);
 	}
 }
+
+void block() {}
+
+void unblock() {}
 
 void flip(bool force) {
 	(void) force;

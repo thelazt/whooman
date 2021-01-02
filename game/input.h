@@ -34,5 +34,6 @@ enum Control update();
 
 bool active(enum Method method, enum Action action);
 
-bool mouse(int &pos_x, int &pos_y);
+bool mouse(unsigned &pos_x, unsigned &pos_y);
+
 }  // namespace Input

@@ -42,29 +42,10 @@ Menu::Menu()
 	assert(buttonPlay != nullptr && buttonInfo != nullptr && buttonQuit != nullptr);
 }
 
-
-void Menu::stats() {
-	const unsigned short wleft = 416;
-	bool ani = false;
-	while (Input::update()) {
-		ani = !ani;
-		Screen::lock();
-		background.draw(0, 0, 0);
-		podium.draw(0, wleft, 450);
-		player[0].skin->draw(1, wleft + 8, 440);
-		player[2].skin->draw(12, wleft + 118, 450);
-		podium.draw(1, wleft, 450);
-		player[1].skin->draw(ani ? 15 : 16, wleft + 62, 410);
-		Screen::unlock();
-		Screen::flip();
-		GuardedBell::sleep(300);
-	}
-}
-
 void Menu::show() {
 	unsigned tick = 0;
 	unsigned fire = 0;
-	int mouse_x, mouse_y;
+	unsigned mouse_x, mouse_y;
 	while (true) {
 		// Show Menu
 		do {
@@ -106,7 +87,7 @@ void Menu::show() {
 			if (buttonQuit->pressed(true))
 				return;
 
-			GuardedBell::sleep(30);
+			GuardedBell::sleep(10);
 		} while (!buttonPlay->pressed(true));
 
 		// Reorder (and count) players
@@ -155,15 +136,15 @@ void Menu::show() {
 				Screen::lock();
 				background.draw(0, 0, 0);
 				podium.draw(0, wleft, 450);
-				assert(res[0] != -1);
-				player[res[0]].skin->draw(1, wleft + 8, 440);
+				assert(res[1] != -1);
+				player[res[1]].skin->draw(1, wleft + 8, 440);
 				if (players > 2) {
 					assert(res[2] != -1);
 					player[res[2]].skin->draw(12, wleft + 118, 450);
 				}
 				podium.draw(1, wleft, 450);
-				assert(res[1] != -1);
-				player[res[1]].skin->draw(ani ? 15 : 16, wleft + 62, 410);
+				assert(res[0] != -1);
+				player[res[0]].skin->draw(ani ? 15 : 16, wleft + 62, 410);
 
 				Screen::unlock();
 				Screen::flip();
