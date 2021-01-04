@@ -115,7 +115,9 @@ enum Playground::GameState Game::round(unsigned short _player, unsigned short ro
 	// Initialize Playground
 	Arena * arena = newArena(_arena, _offsetX, _offsetY, _tileSize);
 	Layout * layout = newLayout(_layout);
+	Screen::lock();
 	if (!playground.create(arena, *layout, itemset, _player)) {
+		Screen::unlock();
 		state = Playground::GAME_ERROR;
 	} else {
 		// Initialize Player
@@ -123,10 +125,17 @@ enum Playground::GameState Game::round(unsigned short _player, unsigned short ro
 		for (unsigned short p = 0; p < _player; p++)
 			move[p] = player[p].input == Input::AI ? Player::MOVE_AUTO : Player::MOVE_WAIT;
 
-		// Game loop
-		draw(false, false, round, rounds);
+		// Draw playground
+		playground.draw(false);
+		Screen::unlock();
+		Screen::flip(true);
+
+		// Wait a second before start
 		GuardedBell::sleep(1000);
+		// Clear input characters
 		Input::update();
+
+		// Game loop
 		unsigned short i = 0;
 		while(state == Playground::GAME_ACTIVE) {
 			// Get movements
