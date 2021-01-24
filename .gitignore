@@ -1,3 +1,6 @@
 bomber-sdl
-bomber.iso
-stubs/
+stubs/*
+!stubs/PORTING.md
+!stubs/user/
+stubs/user/*
+!stubs/user/game/

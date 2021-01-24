@@ -32,14 +32,22 @@ Anpassungen für StuBS begonnen wurde.
 Benutzung
 ---------
 
-Um sowohl die bootfähige ISO (`bomber.iso`) als auch die SDL-Anwendung
-(`bomber-sdl`) zu erstellen, einfach
+Um die SDL-Anwendung zu erstellen & starten, einfach
 
-    make
+    make bomber-sdl
+    ./bomber-sdl
 
-ausführen. Dabei wird natürlich die
+ausführen (dazu muss natürlich die *SDL* Bibliothek lokal installiert sein).
+
+Um das Spiel im eigenen *StuBS* laufen zu lassen, bitte zuerst die
+[Portierungsanleitung](stubs/PORTING.md) befolgen.
+Danach kann die bootfähige ISO mittels
+
+    make bomber.iso
+
+erstellt werden. Dabei wird natürlich die
 [Entwicklungsumgebung für StuBS](https://www4.cs.fau.de/Lehre/WS20/V_BS/Uebungen/aufgabe1/env.shtml)
-inklusive *GRUB* und *Xorriso* vorausgesetzt, sowie die *SDL* Bibliothek.
+inklusive *GRUB* und *Xorriso* vorausgesetzt.
 
 Das erstellte Abbild kann auch direkt in *Qemu* (mit Hardwarebeschleunigung)
 gestartet werden:
