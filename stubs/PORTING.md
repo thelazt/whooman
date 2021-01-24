@@ -118,7 +118,7 @@ Wir brauchen genug Stack für die Threads, z.B. in `thread/thread.h` auf mindest
 
 	static const size_t STACK_SIZE = 131072
 
-Ebenfalls sollte der (*Dynamic Memory Allocator* aus Aufgabe 7)[https://www4.cs.fau.de/Lehre/WS20/V_BS/Uebungen/aufgabe7/a7.shtml#autotoc_md70] in der Lage sein bis zu 64 MB Speicher zu vergeben (alle Grafiken liegen als unkomprimierte *Bitmap* im Speicher!).
+Ebenfalls sollte der [*Dynamic Memory Allocator* aus Aufgabe 7](https://www4.cs.fau.de/Lehre/WS20/V_BS/Uebungen/aufgabe7/a7.shtml#autotoc_md70) in der Lage sein bis zu 64 MB Speicher zu vergeben (alle Grafiken liegen als unkomprimierte *Bitmap* im Speicher!).
 
 
 Spiel in StuBS laden
