@@ -34,8 +34,8 @@ Benutzung
 
 Um die SDL-Anwendung zu erstellen & starten, einfach
 
-    make bomber-sdl
-    ./bomber-sdl
+    make bomber.sdl
+    ./bomber.sdl
 
 ausführen (dazu muss natürlich die *SDL* Bibliothek lokal installiert sein).
 

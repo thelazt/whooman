@@ -10,17 +10,20 @@ Eingabe
 
 Da im Spiel der aktuelle Zustand der Tasten direkt geprüft wird (via `PS2Controller::isPressed()`), wird weder Epilog noch `getKey` mehr gebraucht -- der Prolog (mit Behandlung des [Affengriffs](https://de.wikipedia.org/wiki/Klammergriff)) wird jedoch weiterhin gebraucht.
 
-Außerdem muss die [Mausunterstützung](https://www4.cs.fau.de/Lehre/WS20/V_BS/Uebungen/aufgabe2/a2.shtml#autotoc_md31) aktiviert sein; der Treiber braucht sich nicht (mehr) um die absolute Position der Maus kümmern, sondern muss nur in der Lage sein die relative Änderung seit dem letzten Abruf via `Mouse::delta` zurückzugeben (ein Epilog ist somit nicht notwendig):
+Außerdem muss die [Mausunterstützung](https://www4.cs.fau.de/Lehre/WS20/V_BS/Uebungen/aufgabe2/a2.shtml#autotoc_md31) aktiviert sein; der Treiber braucht sich nicht mehr (nur) um die absolute Position der Maus kümmern, sondern muss in der Lage sein die relative Änderung seit dem letzten Abruf via `Mouse::delta()` zurückzugeben (ein Epilog ist somit nicht notwendig):
 
 	int delta_x, delta_y;
 	bool delta_button;
 
 	bool Mouse::prologue() {
-		bool update = PS2Controller::fetch(state);
-		delta_x += state.x;
-		delta_y += state.y;
-		delta_button = delta_button || state.button[MOUSE_LEFT];
-		return false;
+		if (PS2Controller::fetch(state)) {
+			delta_x += state.x;
+			delta_y += state.y;
+			delta_button = delta_button || state.button[MOUSE_LEFT];
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	bool Mouse::delta(int & x, int & y) {
@@ -33,6 +36,17 @@ Außerdem muss die [Mausunterstützung](https://www4.cs.fau.de/Lehre/WS20/V_BS/U
 		Core::Interrupt::restore(status);
 		return pressed;
 	}
+
+Von diesem Treiber muss eine globale Instanz mit dem Name `mouseDev` erstellt werden:
+
+	Mouse mouseDev(1024, 768);
+
+(sowie dazugehöriger `plugin()`-Aufruf in der `main`)
+
+
+**Hinweis:** In Qemu/KVM hat die emulierte PS/2 Maus einen maximalen (absoluten) X-Wert, was die Steuerung mit der Maus stark behindert.
+Ein ähnliches Problem hat der VNC Fernzugriff auf die Testhardware.
+Bei der direkten Verwendung der Testhardware oder von anderen Virtualisierungslösungen wie VirtualBox tritt dieses Problem jedoch nicht auf.
 
 
 Ausgabe
@@ -72,7 +86,7 @@ Und auch in der `main` angepasst werden:
 
 Unser *StuBS* verwendet für die flüssige Darstellung der Bildschirmausgabe eine Doppelpufferung.
 Da sich große Teile des Bildschirms während einer Spielrunde nicht ändern, werden diese nur zu Beginn einmal gezeichnet.
-Entsprechend muss nun die Funktion `Graphics::switchBuffers` so angepasst werden, dass sie den Inhalt nach dem initialen kompletten Zeichnen auf den zweiten Puffer kopiert -- gesteuert über dem Parameter `duplicate`:
+Entsprechend muss nun die Funktion `Graphics::switchBuffers` in `device/graphics.cc` so angepasst werden, dass sie den Inhalt nach dem initialen kompletten Zeichnen auf den zweiten Puffer kopiert -- gesteuert über dem Parameter `duplicate`:
 
 	bool Graphics::switchBuffers(bool duplicate) {
 		if (!refresh || duplicate) {
@@ -99,8 +113,10 @@ Da dadurch auch der Textmodus nicht mehr verwendet wird, ist es ggf. empfehlensw
 	#include "device/serialstream.h"
 	SerialStream dout;
 
+in der `main.cc` und entsprechende Anpassungen in `debug/output.h`.
+Durch den Qemu Parameter `-serial stdio` erfolgt die `DBG`-Ausgabe dann direkt im Terminal.
 
-Bitte Beachten: Aufgrund von via Multiboot gesetzten Grafikmodus (VBE) lässt sich das Spiel nicht mehr direkt via `--kernel` Parameter von Qemu/KVM starten, sondern muss als ISO geladen werden.
+**Bitte Beachten:** Aufgrund von via Multiboot gesetzten Grafikmodus (VBE) lässt sich das Spiel nicht mehr direkt via `--kernel` Parameter von Qemu/KVM starten, sondern muss als ISO geladen werden.
 
 
 ### Grafiken via initiale Ramdisk
@@ -137,6 +153,8 @@ In der `main` muss nun der Thread für das Spiel erstellt werden:
 		
 		// ...
 	}
+
+Die Beispiele aus Aufgabe 7 (im Ordner `user/graphics/`) können hingegen gelöscht werden.
 
 
 Weitere Optimierungen

@@ -1,4 +1,5 @@
-bomber-sdl
+bomber.sdl
+bomber.iso
 stubs/*
 !stubs/PORTING.md
 !stubs/user/
