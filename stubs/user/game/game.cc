@@ -1,1 +1,1 @@
-../../../game/game.cc
+../../../src/game.cc

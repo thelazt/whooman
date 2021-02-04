@@ -22,7 +22,7 @@ zurückgegriffen und für das Spiel [angepasst](https://de.wikipedia.org/wiki/Hq
 Zur einfacheren Entwicklung wurden die Ein- und Ausgabeschnittstellen mittels
 [SDL](https://de.wikipedia.org/wiki/Simple_DirectMedia_Layer) nachgeahmt und
 das Spiel zuerst unter einem aktuellen Linux entwickelt, bevor mti den
-Anpassungen für StuBS begonnen wurde.
+Anpassungen für *StuBS* begonnen wurde.
 
 <img src="screenshot_1.png"  width="256" height="192">
 <img src="screenshot_2.png"  width="256" height="192">
@@ -37,7 +37,9 @@ Um die SDL-Anwendung zu erstellen & starten, einfach
     make bomber.sdl
     ./bomber.sdl
 
-ausführen (dazu muss natürlich die *SDL* Bibliothek lokal installiert sein).
+ausführen (dazu muss natürlich die *SDL* Bibliothek lokal installiert sein,
+debianoide Distributionen brauchen dafür die Pakete `libsdl1.2-de` sowie
+`libsdl-image1.2-dev`).
 
 Um das Spiel im eigenen *StuBS* laufen zu lassen, bitte zuerst die
 [Portierungsanleitung](stubs/PORTING.md) befolgen.
@@ -47,7 +49,8 @@ Danach kann die bootfähige ISO mittels
 
 erstellt werden. Dabei wird natürlich die
 [Entwicklungsumgebung für StuBS](https://www4.cs.fau.de/Lehre/WS20/V_BS/Uebungen/aufgabe1/env.shtml)
-inklusive *GRUB* und *Xorriso* vorausgesetzt.
+inklusive *GRUB* und *Xorriso* vorausgesetzt und mittels `optipng` werden die
+Bilddateien optimiert (komprimiert).
 
 Das erstellte Abbild kann auch direkt in *Qemu* (mit Hardwarebeschleunigung)
 gestartet werden:
@@ -61,5 +64,6 @@ Autor
 Ein kleines Hobbyprojekt, stückchenweise programmiert (mit langenen Pausen)
 zwischen Anfang 2018 und 2021 von [Bernhard Heinloth](mailto:bernhard@heinloth.net).
 
-Die Rechte am Spiel Bomberman und den zugrunde liegenden Spielprinzip sowie den
-Grafiken liegen bei Hudson/Konami und Nintendo.
+Die Rechte am Spiel [Bomberman](https://de.wikipedia.org/wiki/Bomberman) und
+den zugrunde liegenden Spielprinzip sowie den Grafiken liegen bei
+Hudson/Konami und Nintendo.

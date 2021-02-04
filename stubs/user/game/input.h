@@ -1,1 +1,1 @@
-../../../game/input.h
+../../../src/input.h

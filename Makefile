@@ -3,13 +3,13 @@ STUBS := stubs
 ISOBUILD := $(STUBS)/.build/stubs.iso
 INITRD := $(STUBS)/initrd
 
-all: bomber-sdl
+bomber.sdl: src/bomber
+	ln -fs $< $@
 
-bomber.sdl: game/bomber
-	ln -s $< $@ || true
+all: bomber.sdl bomber.iso
 
 bomber.iso: $(ISOBUILD)
-	ln -s $< $@ || true
+	ln -fs $< $@
 
 kvm: $(ISOBUILD)
 	qemu-system-x86_64 -cdrom $< -enable-kvm -cpu host -k en-us -serial stdio -soundhw pcspk -d guest_errors -m 2048
@@ -21,7 +21,7 @@ $(INITRD)/%: %
 $(ISOBUILD): $(STUBS)/Makefile $(addprefix $(INITRD)/,$(SPRITES)) FORCE
 	$(MAKE) INITRD_FREE=4194304 PROJECT=WHOOMan -C $(STUBS) iso
 
-game/bomber: game/Makefile FORCE
+src/bomber: src/Makefile FORCE
 	$(MAKE) -C $(dir $@) $(notdir $@)
 
 FORCE:
